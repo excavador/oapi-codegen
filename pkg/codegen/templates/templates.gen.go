@@ -566,13 +566,19 @@ func New{{$opid}}Request{{if .HasBody}}WithBody{{end}}(server string{{genParamAr
     }
 {{if .QueryParams}}
     queryValues := queryUrl.Query()
+
+    var queryFrag string
+    var parsed url.Values
+    var queryParamBuf []byte
+    _ = queryFrag
+    _ = parsed
+    _ = queryParamBuf
 {{range $paramIdx, $param := .QueryParams}}
     {{if not .Required}} if params.{{.GoName}} != nil { {{end}}
     {{if .IsPassThrough}}
     queryValues.Add("{{.ParamName}}", {{if not .Required}}*{{end}}params.{{.GoName}})
     {{end}}
     {{if .IsJson}}
-    var queryParamBuf []byte
     if queryParamBuf, err = json.Marshal({{if not .Required}}*{{end}}params.{{.GoName}}); err != nil {
         return nil, err
     } else {
@@ -581,8 +587,6 @@ func New{{$opid}}Request{{if .HasBody}}WithBody{{end}}(server string{{genParamAr
 
     {{end}}
     {{if .IsStyled}}
-    var queryFrag string
-    var parsed url.Values
     if queryFrag, err = runtime.StyleParam("{{.Style}}", {{.Explode}}, "{{.ParamName}}", {{if not .Required}}*{{end}}params.{{.GoName}}); err != nil {
         return nil, err
     } else if parsed, err = url.ParseQuery(queryFrag); err != nil {
