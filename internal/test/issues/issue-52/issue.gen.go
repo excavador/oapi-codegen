@@ -323,7 +323,7 @@ func (c *ExampleGetContext) JSON200(resp Document) error {
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
-	Handler ServerInterface
+	Handler func(echo.Context) ServerInterface
 }
 
 // ExampleGet converts echo context to params.
@@ -331,7 +331,7 @@ func (w *ServerInterfaceWrapper) ExampleGet(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.ExampleGet(ExampleGetContext{ctx})
+	err = w.Handler(ctx).ExampleGet(ExampleGetContext{ctx})
 	return err
 }
 
@@ -354,9 +354,15 @@ type EchoRouter interface {
 func RegisterHandlers(router EchoRouter, si ServerInterface, pathPrefix string) {
 
 	wrapper := ServerInterfaceWrapper{
-		Handler: si,
+		Handler: func(echo.Context) ServerInterface {
+			return si
+		},
 	}
+	wrapper.RegisterHandlers(router, pathPrefix)
 
+}
+
+func (wrapper ServerInterfaceWrapper) RegisterHandlers(router EchoRouter, pathPrefix string) {
 	router.GET(path.Join(pathPrefix, "/example"), wrapper.ExampleGet)
 
 }

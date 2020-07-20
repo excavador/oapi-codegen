@@ -19,9 +19,15 @@ type EchoRouter interface {
 func RegisterHandlers(router EchoRouter, si ServerInterface, pathPrefix string) {
 {{if .}}
     wrapper := ServerInterfaceWrapper{
-        Handler: si,
+        Handler: func(echo.Context) ServerInterface {
+            return si
+        },
     }
+    wrapper.RegisterHandlers(router, pathPrefix)
 {{end}}
+}
+
+func (wrapper ServerInterfaceWrapper) RegisterHandlers(router EchoRouter, pathPrefix string) {
 {{range .}}router.{{.Method}}(path.Join(pathPrefix, "{{.Path | swaggerUriToEchoUri}}"), wrapper.{{.OperationId}})
 {{end}}
 }

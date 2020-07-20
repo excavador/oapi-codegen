@@ -283,7 +283,7 @@ func (c *GetFooContext) JSON200(resp string) error {
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
-	Handler ServerInterface
+	Handler func(echo.Context) ServerInterface
 }
 
 // GetFoo converts echo context to params.
@@ -326,7 +326,7 @@ func (w *ServerInterfaceWrapper) GetFoo(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetFoo(GetFooContext{ctx}, params)
+	err = w.Handler(ctx).GetFoo(GetFooContext{ctx}, params)
 	return err
 }
 
@@ -349,9 +349,15 @@ type EchoRouter interface {
 func RegisterHandlers(router EchoRouter, si ServerInterface, pathPrefix string) {
 
 	wrapper := ServerInterfaceWrapper{
-		Handler: si,
+		Handler: func(echo.Context) ServerInterface {
+			return si
+		},
 	}
+	wrapper.RegisterHandlers(router, pathPrefix)
 
+}
+
+func (wrapper ServerInterfaceWrapper) RegisterHandlers(router EchoRouter, pathPrefix string) {
 	router.GET(path.Join(pathPrefix, "/foo"), wrapper.GetFoo)
 
 }

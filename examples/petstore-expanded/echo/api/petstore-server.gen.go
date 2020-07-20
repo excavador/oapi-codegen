@@ -102,7 +102,7 @@ func (c *FindPetByIdContext) JSON200(resp Pet) error {
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
-	Handler ServerInterface
+	Handler func(echo.Context) ServerInterface
 }
 
 // FindPets converts echo context to params.
@@ -126,7 +126,7 @@ func (w *ServerInterfaceWrapper) FindPets(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.FindPets(FindPetsContext{ctx}, params)
+	err = w.Handler(ctx).FindPets(FindPetsContext{ctx}, params)
 	return err
 }
 
@@ -135,7 +135,7 @@ func (w *ServerInterfaceWrapper) AddPet(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.AddPet(AddPetContext{ctx})
+	err = w.Handler(ctx).AddPet(AddPetContext{ctx})
 	return err
 }
 
@@ -151,7 +151,7 @@ func (w *ServerInterfaceWrapper) DeletePet(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.DeletePet(DeletePetContext{ctx}, id)
+	err = w.Handler(ctx).DeletePet(DeletePetContext{ctx}, id)
 	return err
 }
 
@@ -167,7 +167,7 @@ func (w *ServerInterfaceWrapper) FindPetById(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.FindPetById(FindPetByIdContext{ctx}, id)
+	err = w.Handler(ctx).FindPetById(FindPetByIdContext{ctx}, id)
 	return err
 }
 
@@ -190,9 +190,15 @@ type EchoRouter interface {
 func RegisterHandlers(router EchoRouter, si ServerInterface, pathPrefix string) {
 
 	wrapper := ServerInterfaceWrapper{
-		Handler: si,
+		Handler: func(echo.Context) ServerInterface {
+			return si
+		},
 	}
+	wrapper.RegisterHandlers(router, pathPrefix)
 
+}
+
+func (wrapper ServerInterfaceWrapper) RegisterHandlers(router EchoRouter, pathPrefix string) {
 	router.GET(path.Join(pathPrefix, "/pets"), wrapper.FindPets)
 	router.POST(path.Join(pathPrefix, "/pets"), wrapper.AddPet)
 	router.DELETE(path.Join(pathPrefix, "/pets/:id"), wrapper.DeletePet)

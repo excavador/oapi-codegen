@@ -1394,7 +1394,7 @@ func (c *BodyWithAddPropsContext) BindJSON() (*BodyWithAddPropsJSONBody, error) 
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
-	Handler ServerInterface
+	Handler func(echo.Context) ServerInterface
 }
 
 // EnsureEverythingIsReferenced converts echo context to params.
@@ -1402,7 +1402,7 @@ func (w *ServerInterfaceWrapper) EnsureEverythingIsReferenced(ctx echo.Context) 
 	var err error
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.EnsureEverythingIsReferenced(EnsureEverythingIsReferencedContext{ctx})
+	err = w.Handler(ctx).EnsureEverythingIsReferenced(EnsureEverythingIsReferencedContext{ctx})
 	return err
 }
 
@@ -1427,7 +1427,7 @@ func (w *ServerInterfaceWrapper) ParamsWithAddProps(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.ParamsWithAddProps(ParamsWithAddPropsContext{ctx}, params)
+	err = w.Handler(ctx).ParamsWithAddProps(ParamsWithAddPropsContext{ctx}, params)
 	return err
 }
 
@@ -1436,7 +1436,7 @@ func (w *ServerInterfaceWrapper) BodyWithAddProps(ctx echo.Context) error {
 	var err error
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.BodyWithAddProps(BodyWithAddPropsContext{ctx})
+	err = w.Handler(ctx).BodyWithAddProps(BodyWithAddPropsContext{ctx})
 	return err
 }
 
@@ -1459,9 +1459,15 @@ type EchoRouter interface {
 func RegisterHandlers(router EchoRouter, si ServerInterface, pathPrefix string) {
 
 	wrapper := ServerInterfaceWrapper{
-		Handler: si,
+		Handler: func(echo.Context) ServerInterface {
+			return si
+		},
 	}
+	wrapper.RegisterHandlers(router, pathPrefix)
 
+}
+
+func (wrapper ServerInterfaceWrapper) RegisterHandlers(router EchoRouter, pathPrefix string) {
 	router.GET(path.Join(pathPrefix, "/ensure-everything-is-referenced"), wrapper.EnsureEverythingIsReferenced)
 	router.GET(path.Join(pathPrefix, "/params_with_add_props"), wrapper.ParamsWithAddProps)
 	router.POST(path.Join(pathPrefix, "/params_with_add_props"), wrapper.BodyWithAddProps)
