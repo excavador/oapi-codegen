@@ -40,10 +40,10 @@ type GenericObject map[string]interface{}
 
 // NullableProperties defines model for NullableProperties.
 type NullableProperties struct {
-	Optional            *string `json:"optional,omitempty"`
-	OptionalAndNullable *string `json:"optionalAndNullable"`
-	Required            string  `json:"required"`
-	RequiredAndNullable *string `json:"requiredAndNullable"`
+	Optional            *string `json:"optional,omitempty" validate:""`
+	OptionalAndNullable *string `json:"optionalAndNullable" validate:""`
+	Required            string  `json:"required" validate:"required"`
+	RequiredAndNullable *string `json:"requiredAndNullable" validate:"required"`
 }
 
 // Issue185JSONBody defines parameters for Issue185.
@@ -568,11 +568,11 @@ type EnsureEverythingIsReferencedResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		AnyType1 *AnyType1 `json:"anyType1,omitempty"`
+		AnyType1 *AnyType1 `json:"anyType1,omitempty" validate:""`
 
 		// This should be an interface{}
-		AnyType2         *AnyType2         `json:"anyType2,omitempty"`
-		CustomStringType *CustomStringType `json:"customStringType,omitempty"`
+		AnyType2         *AnyType2         `json:"anyType2,omitempty" validate:""`
+		CustomStringType *CustomStringType `json:"customStringType,omitempty" validate:"custom"`
 	}
 }
 
@@ -787,11 +787,11 @@ func ParseEnsureEverythingIsReferencedResponse(rsp *http.Response) (*EnsureEvery
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			AnyType1 *AnyType1 `json:"anyType1,omitempty"`
+			AnyType1 *AnyType1 `json:"anyType1,omitempty" validate:""`
 
 			// This should be an interface{}
-			AnyType2         *AnyType2         `json:"anyType2,omitempty"`
-			CustomStringType *CustomStringType `json:"customStringType,omitempty"`
+			AnyType2         *AnyType2         `json:"anyType2,omitempty" validate:""`
+			CustomStringType *CustomStringType `json:"customStringType,omitempty" validate:"custom"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
