@@ -1,0 +1,65 @@
+openapi: "3.0.1"
+info:
+  version: 1.0.0
+  title: Test validator
+  license:
+    name: MIT
+paths:
+  /post_struct_a:
+    post:
+      operationId: PostStructA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StructA'
+  /post_struct_b:
+    post:
+      operationId: PostStructB
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StructB'
+  /post_struct_c:
+    post:
+      operationId: PostStructC
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StructC'
+components:
+  schemas:
+    StructA:
+      required:
+        - requiredString
+      properties:
+        requiredString:
+          type: string
+        rangeInt:
+          type: integer
+          format: int64
+          minimum: 2.1 # will generate a tag "min=2", otherwise the validator will panic
+          maximum: 42
+    StructB:
+      properties:
+        listItem:
+          type: array
+          items:
+            type: string
+            minLength: 1
+    StructC:
+      required:
+        - color
+      properties:
+        color:
+          $ref: '#/components/schemas/Color'
+    Color:
+      type: string
+      enum:
+        - black
+        - white
