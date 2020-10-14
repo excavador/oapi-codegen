@@ -98,12 +98,21 @@ func genResponsePayload(operationID string) string {
 	return buffer.String()
 }
 
-func genResponseContext(op *OperationDefinition) string {
+func genOperationContext(op *OperationDefinition) string {
 	var buffer = bytes.NewBufferString("")
 
 	buffer.WriteString(fmt.Sprintf(`type %sContext struct {
 	echo.Context
 }`, op.OperationId))
+
+	buffer.WriteString(genResponseHelpers(op))
+	buffer.WriteString(genRequestHelpers(op))
+
+	return buffer.String()
+}
+
+func genResponseHelpers(op *OperationDefinition) string {
+	var buffer = bytes.NewBufferString("")
 
 	responses := op.Spec.Responses
 	sortedResponsesKeys := SortedResponsesKeys(responses)
@@ -165,11 +174,83 @@ func (c *%sContext) %s(resp %s) error {
 	}
 	return c.%s(%s, resp)
 }
-`, op.OperationId, typeName + responseName, responseSchema.TypeDecl(), typeName, responseName))
+`, op.OperationId, typeName+responseName, responseSchema.TypeDecl(), typeName, responseName))
 
 				}
 			}
 		}
+	}
+	return buffer.String()
+}
+
+func genRequestHelpers(op *OperationDefinition) string {
+	var buffer = bytes.NewBufferString("")
+
+	requestBody := op.Spec.RequestBody
+	if requestBody == nil || requestBody.Value == nil {
+		return ""
+	}
+
+	included := map[string]string{}
+
+	requestBodyDefinitions, _, err := GenerateBodyDefinitions(op.OperationId, requestBody)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, rbd := range requestBodyDefinitions {
+		contentTypeName := rbd.ContentType
+		var typeName string
+		switch {
+
+		// JSON:
+		case StringInArray(contentTypeName, contentTypesJSON):
+			typeName = "JSON"
+		case StringInArray(contentTypeName, contentTypesXML):
+			typeName = "XML"
+		default:
+			continue
+		}
+		if previousCT, ok := included[typeName]; ok {
+			panic(fmt.Sprintf("%s: failed to add %s because of %s", typeName, contentTypeName, previousCT))
+		} else {
+			included[typeName] = contentTypeName
+		}
+
+		fmt.Fprintf(buffer, `
+func (c *%sContext) Bind%s() (*%s, error) {
+	var err error
+`, op.OperationId, typeName, rbd.Schema.TypeDecl())
+		buffer.WriteString(`
+	// optional
+	if c.Request().ContentLength == 0 {`)
+		if !requestBody.Value.Required {
+			buffer.WriteString(`return nil, nil`)
+		} else {
+			buffer.WriteString(`return nil, errors.New("the request body should not be empty")`)
+		}
+		buffer.WriteString("\t}\n")
+
+		fmt.Fprintf(buffer, `
+	ctype := c.Request().Header.Get(echo.HeaderContentType)
+	if ctype != "%s" {
+		err = errors.New(fmt.Sprintf("incorrect content type: %%s", ctype))
+		return nil, err
+	}
+
+	var result %s
+	if err = c.Bind(&result); err != nil {
+		return nil, err
+	}
+
+	if err = c.Validate(result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+`, contentTypeName, rbd.Schema.TypeDecl())
+
 	}
 
 	return buffer.String()
@@ -349,7 +430,7 @@ var TemplateFunctions = template.FuncMap{
 	"genResponsePayload":         genResponsePayload,
 	"genResponseTypeName":        genResponseTypeName,
 	"genResponseUnmarshal":       genResponseUnmarshal,
-	"genResponseContext":         genResponseContext,
+	"genOperationContext":        genOperationContext,
 	"getResponseTypeDefinitions": getResponseTypeDefinitions,
 	"toStringArray":              toStringArray,
 	"lower":                      strings.ToLower,

@@ -7,5 +7,5 @@ type ServerInterface interface {
 }
 
 {{ range .}}
-{{ genResponseContext . }}
+{{ genOperationContext . }}
 {{ end }}
