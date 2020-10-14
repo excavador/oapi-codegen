@@ -1296,20 +1296,20 @@ type EnsureEverythingIsReferencedContext struct {
 func (c *EnsureEverythingIsReferencedContext) JSON200(resp struct {
 
 	// Has additional properties with schema for dictionaries
-	Five *AdditionalPropertiesObject5 `json:"five,omitempty"`
+	Five *AdditionalPropertiesObject5 `json:"five,omitempty" validate:""`
 
 	// Has anonymous field which has additional properties
-	Four      *AdditionalPropertiesObject4 `json:"four,omitempty"`
-	JsonField *ObjectWithJsonField         `json:"jsonField,omitempty"`
+	Four      *AdditionalPropertiesObject4 `json:"four,omitempty" validate:""`
+	JsonField *ObjectWithJsonField         `json:"jsonField,omitempty" validate:""`
 
 	// Has additional properties of type int
-	One *AdditionalPropertiesObject1 `json:"one,omitempty"`
+	One *AdditionalPropertiesObject1 `json:"one,omitempty" validate:""`
 
 	// Allows any additional property
-	Three *AdditionalPropertiesObject3 `json:"three,omitempty"`
+	Three *AdditionalPropertiesObject3 `json:"three,omitempty" validate:""`
 
 	// Does not allow additional properties
-	Two *AdditionalPropertiesObject2 `json:"two,omitempty"`
+	Two *AdditionalPropertiesObject2 `json:"two,omitempty" validate:""`
 }) error {
 	err := c.Validate(resp)
 	if err != nil {
@@ -1318,12 +1318,64 @@ func (c *EnsureEverythingIsReferencedContext) JSON200(resp struct {
 	return c.JSON(200, resp)
 }
 
+func (c *EnsureEverythingIsReferencedContext) BindJSON() (*RequestBody, error) {
+	var err error
+
+	// optional
+	if c.Request().ContentLength == 0 {
+		return nil, nil
+	}
+
+	ctype := c.Request().Header.Get(echo.HeaderContentType)
+	if ctype != "application/json" {
+		err = errors.New(fmt.Sprintf("incorrect content type: %s", ctype))
+		return nil, err
+	}
+
+	var result RequestBody
+	if err = c.Bind(&result); err != nil {
+		return nil, err
+	}
+
+	if err = c.Validate(result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
 type ParamsWithAddPropsContext struct {
 	echo.Context
 }
 
 type BodyWithAddPropsContext struct {
 	echo.Context
+}
+
+func (c *BodyWithAddPropsContext) BindJSON() (*BodyWithAddPropsJSONBody, error) {
+	var err error
+
+	// optional
+	if c.Request().ContentLength == 0 {
+		return nil, errors.New("the request body should not be empty")
+	}
+
+	ctype := c.Request().Header.Get(echo.HeaderContentType)
+	if ctype != "application/json" {
+		err = errors.New(fmt.Sprintf("incorrect content type: %s", ctype))
+		return nil, err
+	}
+
+	var result BodyWithAddPropsJSONBody
+	if err = c.Bind(&result); err != nil {
+		return nil, err
+	}
+
+	if err = c.Validate(result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.

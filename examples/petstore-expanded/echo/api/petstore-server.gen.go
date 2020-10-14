@@ -14,6 +14,7 @@ import (
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 )
 
 // ServerInterface represents all server handlers.
@@ -54,6 +55,32 @@ func (c *AddPetContext) JSON200(resp Pet) error {
 		return err
 	}
 	return c.JSON(200, resp)
+}
+
+func (c *AddPetContext) BindJSON() (*AddPetJSONBody, error) {
+	var err error
+
+	// optional
+	if c.Request().ContentLength == 0 {
+		return nil, errors.New("the request body should not be empty")
+	}
+
+	ctype := c.Request().Header.Get(echo.HeaderContentType)
+	if ctype != "application/json" {
+		err = errors.New(fmt.Sprintf("incorrect content type: %s", ctype))
+		return nil, err
+	}
+
+	var result AddPetJSONBody
+	if err = c.Bind(&result); err != nil {
+		return nil, err
+	}
+
+	if err = c.Validate(result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 type DeletePetContext struct {

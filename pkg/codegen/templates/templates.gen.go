@@ -771,7 +771,7 @@ type ServerInterface interface {
 }
 
 {{ range .}}
-{{ genResponseContext . }}
+{{ genOperationContext . }}
 {{ end }}`,
 	"typedef.tmpl": `{{range .Types}}
 // {{.TypeName}} defines model for {{.JsonName}}.

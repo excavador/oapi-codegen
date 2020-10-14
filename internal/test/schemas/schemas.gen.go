@@ -22,6 +22,7 @@ import (
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 )
 
 // N5StartsWithNumber defines model for 5StartsWithNumber.
@@ -1051,11 +1052,11 @@ type EnsureEverythingIsReferencedContext struct {
 }
 
 func (c *EnsureEverythingIsReferencedContext) JSON200(resp struct {
-	AnyType1 *AnyType1 `json:"anyType1,omitempty"`
+	AnyType1 *AnyType1 `json:"anyType1,omitempty" validate:""`
 
 	// This should be an interface{}
-	AnyType2         *AnyType2         `json:"anyType2,omitempty"`
-	CustomStringType *CustomStringType `json:"customStringType,omitempty"`
+	AnyType2         *AnyType2         `json:"anyType2,omitempty" validate:""`
+	CustomStringType *CustomStringType `json:"customStringType,omitempty" validate:"custom"`
 }) error {
 	err := c.Validate(resp)
 	if err != nil {
@@ -1101,6 +1102,32 @@ type Issue185Context struct {
 	echo.Context
 }
 
+func (c *Issue185Context) BindJSON() (*Issue185JSONBody, error) {
+	var err error
+
+	// optional
+	if c.Request().ContentLength == 0 {
+		return nil, nil
+	}
+
+	ctype := c.Request().Header.Get(echo.HeaderContentType)
+	if ctype != "application/json" {
+		err = errors.New(fmt.Sprintf("incorrect content type: %s", ctype))
+		return nil, err
+	}
+
+	var result Issue185JSONBody
+	if err = c.Bind(&result); err != nil {
+		return nil, err
+	}
+
+	if err = c.Validate(result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
 type Issue209Context struct {
 	echo.Context
 }
@@ -1115,6 +1142,32 @@ type Issue41Context struct {
 
 type Issue9Context struct {
 	echo.Context
+}
+
+func (c *Issue9Context) BindJSON() (*Issue9JSONBody, error) {
+	var err error
+
+	// optional
+	if c.Request().ContentLength == 0 {
+		return nil, nil
+	}
+
+	ctype := c.Request().Header.Get(echo.HeaderContentType)
+	if ctype != "application/json" {
+		err = errors.New(fmt.Sprintf("incorrect content type: %s", ctype))
+		return nil, err
+	}
+
+	var result Issue9JSONBody
+	if err = c.Bind(&result); err != nil {
+		return nil, err
+	}
+
+	if err = c.Validate(result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
