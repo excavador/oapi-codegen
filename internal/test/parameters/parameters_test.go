@@ -218,7 +218,7 @@ func TestParameterBinding(t *testing.T) {
 	var ts testServer
 	e := echo.New()
 	e.Use(middleware.Logger())
-	RegisterHandlers(e, &ts)
+	RegisterHandlers(e, &ts, "")
 
 	expectedObject := Object{
 		FirstName: "Alex",
@@ -469,7 +469,7 @@ func TestClientPathParams(t *testing.T) {
 	var ts testServer
 	e := echo.New()
 	e.Use(middleware.Logger())
-	RegisterHandlers(e, &ts)
+	RegisterHandlers(e, &ts, "")
 	server := "http://example.com"
 
 	expectedObject := Object{
@@ -586,7 +586,7 @@ func TestClientQueryParams(t *testing.T) {
 	var ts testServer
 	e := echo.New()
 	e.Use(middleware.Logger())
-	RegisterHandlers(e, &ts)
+	RegisterHandlers(e, &ts, "")
 	server := "http://example.com"
 
 	expectedObject1 := Object{

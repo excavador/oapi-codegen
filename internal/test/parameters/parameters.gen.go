@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"path"
 	"strings"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
@@ -542,7 +543,8 @@ func NewGetContentObjectRequest(server string, param ComplexObject) (*http.Reque
 	}
 	pathParam0 = string(pathParamBuf0)
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -557,7 +559,8 @@ func NewGetContentObjectRequest(server string, param ComplexObject) (*http.Reque
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -569,7 +572,8 @@ func NewGetContentObjectRequest(server string, param ComplexObject) (*http.Reque
 func NewGetCookieRequest(server string, params *GetCookieParams) (*http.Request, error) {
 	var err error
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -584,7 +588,8 @@ func NewGetCookieRequest(server string, params *GetCookieParams) (*http.Request,
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -703,7 +708,8 @@ func NewGetCookieRequest(server string, params *GetCookieParams) (*http.Request,
 func NewGetHeaderRequest(server string, params *GetHeaderParams) (*http.Request, error) {
 	var err error
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -718,7 +724,8 @@ func NewGetHeaderRequest(server string, params *GetHeaderParams) (*http.Request,
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -816,7 +823,8 @@ func NewGetLabelExplodeArrayRequest(server string, param []int32) (*http.Request
 		return nil, err
 	}
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -831,7 +839,8 @@ func NewGetLabelExplodeArrayRequest(server string, param []int32) (*http.Request
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -850,7 +859,8 @@ func NewGetLabelExplodeObjectRequest(server string, param Object) (*http.Request
 		return nil, err
 	}
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -865,7 +875,8 @@ func NewGetLabelExplodeObjectRequest(server string, param Object) (*http.Request
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -884,7 +895,8 @@ func NewGetLabelNoExplodeArrayRequest(server string, param []int32) (*http.Reque
 		return nil, err
 	}
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -899,7 +911,8 @@ func NewGetLabelNoExplodeArrayRequest(server string, param []int32) (*http.Reque
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -918,7 +931,8 @@ func NewGetLabelNoExplodeObjectRequest(server string, param Object) (*http.Reque
 		return nil, err
 	}
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -933,7 +947,8 @@ func NewGetLabelNoExplodeObjectRequest(server string, param Object) (*http.Reque
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -952,7 +967,8 @@ func NewGetMatrixExplodeArrayRequest(server string, id []int32) (*http.Request, 
 		return nil, err
 	}
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -967,7 +983,8 @@ func NewGetMatrixExplodeArrayRequest(server string, id []int32) (*http.Request, 
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -986,7 +1003,8 @@ func NewGetMatrixExplodeObjectRequest(server string, id Object) (*http.Request, 
 		return nil, err
 	}
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -1001,7 +1019,8 @@ func NewGetMatrixExplodeObjectRequest(server string, id Object) (*http.Request, 
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1020,7 +1039,8 @@ func NewGetMatrixNoExplodeArrayRequest(server string, id []int32) (*http.Request
 		return nil, err
 	}
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -1035,7 +1055,8 @@ func NewGetMatrixNoExplodeArrayRequest(server string, id []int32) (*http.Request
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1054,7 +1075,8 @@ func NewGetMatrixNoExplodeObjectRequest(server string, id Object) (*http.Request
 		return nil, err
 	}
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -1069,7 +1091,8 @@ func NewGetMatrixNoExplodeObjectRequest(server string, id Object) (*http.Request
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1085,7 +1108,8 @@ func NewGetPassThroughRequest(server string, param string) (*http.Request, error
 
 	pathParam0 = param
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -1100,7 +1124,8 @@ func NewGetPassThroughRequest(server string, param string) (*http.Request, error
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1112,7 +1137,8 @@ func NewGetPassThroughRequest(server string, param string) (*http.Request, error
 func NewGetDeepObjectRequest(server string, params *GetDeepObjectParams) (*http.Request, error) {
 	var err error
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -1129,9 +1155,16 @@ func NewGetDeepObjectRequest(server string, params *GetDeepObjectParams) (*http.
 
 	queryValues := queryUrl.Query()
 
-	if queryFrag, err := runtime.StyleParam("deepObject", true, "deepObj", params.DeepObj); err != nil {
+	var queryFrag string
+	var parsed url.Values
+	var queryParamBuf []byte
+	_ = queryFrag
+	_ = parsed
+	_ = queryParamBuf
+
+	if queryFrag, err = runtime.StyleParam("deepObject", true, "deepObj", params.DeepObj); err != nil {
 		return nil, err
-	} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+	} else if parsed, err = url.ParseQuery(queryFrag); err != nil {
 		return nil, err
 	} else {
 		for k, v := range parsed {
@@ -1143,7 +1176,8 @@ func NewGetDeepObjectRequest(server string, params *GetDeepObjectParams) (*http.
 
 	queryUrl.RawQuery = queryValues.Encode()
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1155,7 +1189,8 @@ func NewGetDeepObjectRequest(server string, params *GetDeepObjectParams) (*http.
 func NewGetQueryFormRequest(server string, params *GetQueryFormParams) (*http.Request, error) {
 	var err error
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -1172,11 +1207,18 @@ func NewGetQueryFormRequest(server string, params *GetQueryFormParams) (*http.Re
 
 	queryValues := queryUrl.Query()
 
+	var queryFrag string
+	var parsed url.Values
+	var queryParamBuf []byte
+	_ = queryFrag
+	_ = parsed
+	_ = queryParamBuf
+
 	if params.Ea != nil {
 
-		if queryFrag, err := runtime.StyleParam("form", true, "ea", *params.Ea); err != nil {
+		if queryFrag, err = runtime.StyleParam("form", true, "ea", *params.Ea); err != nil {
 			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+		} else if parsed, err = url.ParseQuery(queryFrag); err != nil {
 			return nil, err
 		} else {
 			for k, v := range parsed {
@@ -1190,9 +1232,9 @@ func NewGetQueryFormRequest(server string, params *GetQueryFormParams) (*http.Re
 
 	if params.A != nil {
 
-		if queryFrag, err := runtime.StyleParam("form", false, "a", *params.A); err != nil {
+		if queryFrag, err = runtime.StyleParam("form", false, "a", *params.A); err != nil {
 			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+		} else if parsed, err = url.ParseQuery(queryFrag); err != nil {
 			return nil, err
 		} else {
 			for k, v := range parsed {
@@ -1206,9 +1248,9 @@ func NewGetQueryFormRequest(server string, params *GetQueryFormParams) (*http.Re
 
 	if params.Eo != nil {
 
-		if queryFrag, err := runtime.StyleParam("form", true, "eo", *params.Eo); err != nil {
+		if queryFrag, err = runtime.StyleParam("form", true, "eo", *params.Eo); err != nil {
 			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+		} else if parsed, err = url.ParseQuery(queryFrag); err != nil {
 			return nil, err
 		} else {
 			for k, v := range parsed {
@@ -1222,9 +1264,9 @@ func NewGetQueryFormRequest(server string, params *GetQueryFormParams) (*http.Re
 
 	if params.O != nil {
 
-		if queryFrag, err := runtime.StyleParam("form", false, "o", *params.O); err != nil {
+		if queryFrag, err = runtime.StyleParam("form", false, "o", *params.O); err != nil {
 			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+		} else if parsed, err = url.ParseQuery(queryFrag); err != nil {
 			return nil, err
 		} else {
 			for k, v := range parsed {
@@ -1238,9 +1280,9 @@ func NewGetQueryFormRequest(server string, params *GetQueryFormParams) (*http.Re
 
 	if params.Ep != nil {
 
-		if queryFrag, err := runtime.StyleParam("form", true, "ep", *params.Ep); err != nil {
+		if queryFrag, err = runtime.StyleParam("form", true, "ep", *params.Ep); err != nil {
 			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+		} else if parsed, err = url.ParseQuery(queryFrag); err != nil {
 			return nil, err
 		} else {
 			for k, v := range parsed {
@@ -1254,9 +1296,9 @@ func NewGetQueryFormRequest(server string, params *GetQueryFormParams) (*http.Re
 
 	if params.P != nil {
 
-		if queryFrag, err := runtime.StyleParam("form", false, "p", *params.P); err != nil {
+		if queryFrag, err = runtime.StyleParam("form", false, "p", *params.P); err != nil {
 			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+		} else if parsed, err = url.ParseQuery(queryFrag); err != nil {
 			return nil, err
 		} else {
 			for k, v := range parsed {
@@ -1270,7 +1312,7 @@ func NewGetQueryFormRequest(server string, params *GetQueryFormParams) (*http.Re
 
 	if params.Co != nil {
 
-		if queryParamBuf, err := json.Marshal(*params.Co); err != nil {
+		if queryParamBuf, err = json.Marshal(*params.Co); err != nil {
 			return nil, err
 		} else {
 			queryValues.Add("co", string(queryParamBuf))
@@ -1280,7 +1322,8 @@ func NewGetQueryFormRequest(server string, params *GetQueryFormParams) (*http.Re
 
 	queryUrl.RawQuery = queryValues.Encode()
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1299,7 +1342,8 @@ func NewGetSimpleExplodeArrayRequest(server string, param []int32) (*http.Reques
 		return nil, err
 	}
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -1314,7 +1358,8 @@ func NewGetSimpleExplodeArrayRequest(server string, param []int32) (*http.Reques
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1333,7 +1378,8 @@ func NewGetSimpleExplodeObjectRequest(server string, param Object) (*http.Reques
 		return nil, err
 	}
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -1348,7 +1394,8 @@ func NewGetSimpleExplodeObjectRequest(server string, param Object) (*http.Reques
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1367,7 +1414,8 @@ func NewGetSimpleNoExplodeArrayRequest(server string, param []int32) (*http.Requ
 		return nil, err
 	}
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -1382,7 +1430,8 @@ func NewGetSimpleNoExplodeArrayRequest(server string, param []int32) (*http.Requ
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1401,7 +1450,8 @@ func NewGetSimpleNoExplodeObjectRequest(server string, param Object) (*http.Requ
 		return nil, err
 	}
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -1416,7 +1466,8 @@ func NewGetSimpleNoExplodeObjectRequest(server string, param Object) (*http.Requ
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1435,7 +1486,8 @@ func NewGetSimplePrimitiveRequest(server string, param int32) (*http.Request, er
 		return nil, err
 	}
 
-	queryUrl, err := url.Parse(server)
+	var queryUrl *url.URL
+	queryUrl, err = url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
@@ -1450,7 +1502,8 @@ func NewGetSimplePrimitiveRequest(server string, param int32) (*http.Request, er
 		return nil, err
 	}
 
-	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	var req *http.Request
+	req, err = http.NewRequest("GET", queryUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -3168,31 +3221,31 @@ type EchoRouter interface {
 }
 
 // RegisterHandlers adds each server route to the EchoRouter.
-func RegisterHandlers(router EchoRouter, si ServerInterface) {
+func RegisterHandlers(router EchoRouter, si ServerInterface, pathPrefix string) {
 
 	wrapper := ServerInterfaceWrapper{
 		Handler: si,
 	}
 
-	router.GET("/contentObject/:param", wrapper.GetContentObject)
-	router.GET("/cookie", wrapper.GetCookie)
-	router.GET("/header", wrapper.GetHeader)
-	router.GET("/labelExplodeArray/:param", wrapper.GetLabelExplodeArray)
-	router.GET("/labelExplodeObject/:param", wrapper.GetLabelExplodeObject)
-	router.GET("/labelNoExplodeArray/:param", wrapper.GetLabelNoExplodeArray)
-	router.GET("/labelNoExplodeObject/:param", wrapper.GetLabelNoExplodeObject)
-	router.GET("/matrixExplodeArray/:id", wrapper.GetMatrixExplodeArray)
-	router.GET("/matrixExplodeObject/:id", wrapper.GetMatrixExplodeObject)
-	router.GET("/matrixNoExplodeArray/:id", wrapper.GetMatrixNoExplodeArray)
-	router.GET("/matrixNoExplodeObject/:id", wrapper.GetMatrixNoExplodeObject)
-	router.GET("/passThrough/:param", wrapper.GetPassThrough)
-	router.GET("/queryDeepObject", wrapper.GetDeepObject)
-	router.GET("/queryForm", wrapper.GetQueryForm)
-	router.GET("/simpleExplodeArray/:param", wrapper.GetSimpleExplodeArray)
-	router.GET("/simpleExplodeObject/:param", wrapper.GetSimpleExplodeObject)
-	router.GET("/simpleNoExplodeArray/:param", wrapper.GetSimpleNoExplodeArray)
-	router.GET("/simpleNoExplodeObject/:param", wrapper.GetSimpleNoExplodeObject)
-	router.GET("/simplePrimitive/:param", wrapper.GetSimplePrimitive)
+	router.GET(path.Join(pathPrefix, "/contentObject/:param"), wrapper.GetContentObject)
+	router.GET(path.Join(pathPrefix, "/cookie"), wrapper.GetCookie)
+	router.GET(path.Join(pathPrefix, "/header"), wrapper.GetHeader)
+	router.GET(path.Join(pathPrefix, "/labelExplodeArray/:param"), wrapper.GetLabelExplodeArray)
+	router.GET(path.Join(pathPrefix, "/labelExplodeObject/:param"), wrapper.GetLabelExplodeObject)
+	router.GET(path.Join(pathPrefix, "/labelNoExplodeArray/:param"), wrapper.GetLabelNoExplodeArray)
+	router.GET(path.Join(pathPrefix, "/labelNoExplodeObject/:param"), wrapper.GetLabelNoExplodeObject)
+	router.GET(path.Join(pathPrefix, "/matrixExplodeArray/:id"), wrapper.GetMatrixExplodeArray)
+	router.GET(path.Join(pathPrefix, "/matrixExplodeObject/:id"), wrapper.GetMatrixExplodeObject)
+	router.GET(path.Join(pathPrefix, "/matrixNoExplodeArray/:id"), wrapper.GetMatrixNoExplodeArray)
+	router.GET(path.Join(pathPrefix, "/matrixNoExplodeObject/:id"), wrapper.GetMatrixNoExplodeObject)
+	router.GET(path.Join(pathPrefix, "/passThrough/:param"), wrapper.GetPassThrough)
+	router.GET(path.Join(pathPrefix, "/queryDeepObject"), wrapper.GetDeepObject)
+	router.GET(path.Join(pathPrefix, "/queryForm"), wrapper.GetQueryForm)
+	router.GET(path.Join(pathPrefix, "/simpleExplodeArray/:param"), wrapper.GetSimpleExplodeArray)
+	router.GET(path.Join(pathPrefix, "/simpleExplodeObject/:param"), wrapper.GetSimpleExplodeObject)
+	router.GET(path.Join(pathPrefix, "/simpleNoExplodeArray/:param"), wrapper.GetSimpleNoExplodeArray)
+	router.GET(path.Join(pathPrefix, "/simpleNoExplodeObject/:param"), wrapper.GetSimpleNoExplodeObject)
+	router.GET(path.Join(pathPrefix, "/simplePrimitive/:param"), wrapper.GetSimplePrimitive)
 
 }
 
