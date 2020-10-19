@@ -316,7 +316,7 @@ type ExampleGetContext struct {
 func (c *ExampleGetContext) JSON200(resp Document) error {
 	err := c.Validate(resp)
 	if err != nil {
-		return err
+		return fmt.Errorf("response validation failed: %s", err)
 	}
 	return c.JSON(200, resp)
 }

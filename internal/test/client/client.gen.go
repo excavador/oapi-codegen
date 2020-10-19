@@ -963,7 +963,11 @@ func (c *PostBothContext) BindJSON() (*PostBothJSONBody, error) {
 	}
 
 	if err = c.Validate(result); err != nil {
-		return nil, err
+		return nil, &echo.HTTPError{
+			Code:     http.StatusBadRequest,
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
+			Internal: err,
+		}
 	}
 
 	return &result, nil
@@ -997,7 +1001,11 @@ func (c *PostJsonContext) BindJSON() (*PostJsonJSONBody, error) {
 	}
 
 	if err = c.Validate(result); err != nil {
-		return nil, err
+		return nil, &echo.HTTPError{
+			Code:     http.StatusBadRequest,
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
+			Internal: err,
+		}
 	}
 
 	return &result, nil

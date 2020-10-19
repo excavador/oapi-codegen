@@ -1327,7 +1327,7 @@ func (c *EnsureEverythingIsReferencedContext) JSON200(resp struct {
 }) error {
 	err := c.Validate(resp)
 	if err != nil {
-		return err
+		return fmt.Errorf("response validation failed: %s", err)
 	}
 	return c.JSON(200, resp)
 }
@@ -1352,7 +1352,11 @@ func (c *EnsureEverythingIsReferencedContext) BindJSON() (*RequestBody, error) {
 	}
 
 	if err = c.Validate(result); err != nil {
-		return nil, err
+		return nil, &echo.HTTPError{
+			Code:     http.StatusBadRequest,
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
+			Internal: err,
+		}
 	}
 
 	return &result, nil
@@ -1386,7 +1390,11 @@ func (c *BodyWithAddPropsContext) BindJSON() (*BodyWithAddPropsJSONBody, error) 
 	}
 
 	if err = c.Validate(result); err != nil {
-		return nil, err
+		return nil, &echo.HTTPError{
+			Code:     http.StatusBadRequest,
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
+			Internal: err,
+		}
 	}
 
 	return &result, nil

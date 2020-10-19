@@ -1082,7 +1082,7 @@ func (c *EnsureEverythingIsReferencedContext) JSON200(resp struct {
 }) error {
 	err := c.Validate(resp)
 	if err != nil {
-		return err
+		return fmt.Errorf("response validation failed: %s", err)
 	}
 	return c.JSON(200, resp)
 }
@@ -1094,7 +1094,7 @@ type Issue127Context struct {
 func (c *Issue127Context) JSON200(resp GenericObject) error {
 	err := c.Validate(resp)
 	if err != nil {
-		return err
+		return fmt.Errorf("response validation failed: %s", err)
 	}
 	return c.JSON(200, resp)
 }
@@ -1102,7 +1102,7 @@ func (c *Issue127Context) JSON200(resp GenericObject) error {
 func (c *Issue127Context) XML200(resp GenericObject) error {
 	err := c.Validate(resp)
 	if err != nil {
-		return err
+		return fmt.Errorf("response validation failed: %s", err)
 	}
 	return c.XML(200, resp)
 }
@@ -1110,7 +1110,7 @@ func (c *Issue127Context) XML200(resp GenericObject) error {
 func (c *Issue127Context) YAML200(resp GenericObject) error {
 	err := c.Validate(resp)
 	if err != nil {
-		return err
+		return fmt.Errorf("response validation failed: %s", err)
 	}
 	var out []byte
 	out, err = yaml.Marshal(resp)
@@ -1144,7 +1144,11 @@ func (c *Issue185Context) BindJSON() (*Issue185JSONBody, error) {
 	}
 
 	if err = c.Validate(result); err != nil {
-		return nil, err
+		return nil, &echo.HTTPError{
+			Code:     http.StatusBadRequest,
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
+			Internal: err,
+		}
 	}
 
 	return &result, nil
@@ -1186,7 +1190,11 @@ func (c *Issue9Context) BindJSON() (*Issue9JSONBody, error) {
 	}
 
 	if err = c.Validate(result); err != nil {
-		return nil, err
+		return nil, &echo.HTTPError{
+			Code:     http.StatusBadRequest,
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
+			Internal: err,
+		}
 	}
 
 	return &result, nil

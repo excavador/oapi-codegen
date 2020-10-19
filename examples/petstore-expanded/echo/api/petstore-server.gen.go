@@ -41,7 +41,7 @@ type FindPetsContext struct {
 func (c *FindPetsContext) JSON200(resp []Pet) error {
 	err := c.Validate(resp)
 	if err != nil {
-		return err
+		return fmt.Errorf("response validation failed: %s", err)
 	}
 	return c.JSON(200, resp)
 }
@@ -53,7 +53,7 @@ type AddPetContext struct {
 func (c *AddPetContext) JSON200(resp Pet) error {
 	err := c.Validate(resp)
 	if err != nil {
-		return err
+		return fmt.Errorf("response validation failed: %s", err)
 	}
 	return c.JSON(200, resp)
 }
@@ -78,7 +78,11 @@ func (c *AddPetContext) BindJSON() (*AddPetJSONBody, error) {
 	}
 
 	if err = c.Validate(result); err != nil {
-		return nil, err
+		return nil, &echo.HTTPError{
+			Code:     http.StatusBadRequest,
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
+			Internal: err,
+		}
 	}
 
 	return &result, nil
@@ -95,7 +99,7 @@ type FindPetByIdContext struct {
 func (c *FindPetByIdContext) JSON200(resp Pet) error {
 	err := c.Validate(resp)
 	if err != nil {
-		return err
+		return fmt.Errorf("response validation failed: %s", err)
 	}
 	return c.JSON(200, resp)
 }

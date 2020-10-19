@@ -276,7 +276,7 @@ type GetFooContext struct {
 func (c *GetFooContext) JSON200(resp string) error {
 	err := c.Validate(resp)
 	if err != nil {
-		return err
+		return fmt.Errorf("response validation failed: %s", err)
 	}
 	return c.JSON(200, resp)
 }
