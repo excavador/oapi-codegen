@@ -203,9 +203,9 @@ func GenerateGoSchema(sref *openapi3.SchemaRef, path []string) (Schema, error) {
 				}
 				var validationTags string
 				if p.Value.Type == "array" {
-					validationTags = goPlaygroundValidator(p.Value.Items.Value, required)
+					validationTags = goPlaygroundValidator(p.Value.Items.Value, required, true)
 				} else {
-					validationTags = goPlaygroundValidator(p.Value, required)
+					validationTags = goPlaygroundValidator(p.Value, required, false)
 				}
 				prop := Property{
 					JsonFieldName:  pName,
@@ -355,7 +355,7 @@ func jsonTag(p Property) string {
 
 // adds validation tags
 // https://github.com/go-playground/validator
-func goPlaygroundValidator(s *openapi3.Schema, required bool) string {
+func goPlaygroundValidator(s *openapi3.Schema, required bool, dive bool) string {
 	var values []string
 
 	if required {
@@ -456,6 +456,10 @@ func goPlaygroundValidator(s *openapi3.Schema, required bool) string {
 
 	if s.MaxProps != nil {
 		// todo
+	}
+
+	if dive {
+		values = append(values, "dive")
 	}
 
 	return fmt.Sprintf(`validate:"%s"`, strings.Join(values, ","))

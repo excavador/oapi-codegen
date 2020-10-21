@@ -36,7 +36,7 @@ type Document_Fields struct {
 
 // Value defines model for Value.
 type Value struct {
-	ArrayValue  *ArrayValue `json:"arrayValue,omitempty" validate:""`
+	ArrayValue  *ArrayValue `json:"arrayValue,omitempty" validate:"dive"`
 	StringValue *string     `json:"stringValue,omitempty" validate:""`
 }
 

@@ -85,3 +85,22 @@ func TestStructC(t *testing.T) {
 		}, typedErr.Translate(translator))
 	}
 }
+
+func TestStructD(t *testing.T) {
+	c := types.StructD{
+		ArrayOfStructA: []types.StructA{},
+	}
+
+	err := validate.Struct(c)
+	assert.Nil(t, err)
+
+	c.ArrayOfStructA = []types.StructA{{RequiredString: ""}}
+	err = validate.Struct(c)
+	if assert.Error(t, err) {
+		typedErr := err.(validator.ValidationErrors)
+		assert.Equal(t, validator.ValidationErrorsTranslations{
+			"StructD.ArrayOfStructA[0].RangeInt": "RangeInt must be 3 or greater",
+			"StructD.ArrayOfStructA[0].RequiredString": "RequiredString is a required field",
+		}, typedErr.Translate(translator))
+	}
+}

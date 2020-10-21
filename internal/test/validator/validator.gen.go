@@ -20,10 +20,15 @@ type StructA struct {
 
 // StructB defines model for StructB.
 type StructB struct {
-	ListItem *[]string `json:"listItem,omitempty" validate:"gte=1"`
+	ListItem *[]string `json:"listItem,omitempty" validate:"gte=1,dive"`
 }
 
 // StructC defines model for StructC.
 type StructC struct {
 	Color Color `json:"color" validate:"required,oneof=black white"`
+}
+
+// StructD defines model for StructD.
+type StructD struct {
+	ArrayOfStructA []StructA `json:"array_of_struct_a" validate:"required,dive"`
 }

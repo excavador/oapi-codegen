@@ -31,6 +31,14 @@ components:
       properties:
         color:
           $ref: '#/components/schemas/Color'
+    StructD:
+      required:
+        - array_of_struct_a
+      properties:
+        array_of_struct_a:
+          type: array
+          items:
+            $ref: '#/components/schemas/StructA'
     Color:
       type: string
       enum:

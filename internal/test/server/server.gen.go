@@ -15,8 +15,8 @@ import (
 
 // EveryTypeOptional defines model for EveryTypeOptional.
 type EveryTypeOptional struct {
-	ArrayInlineField     *[]int              `json:"array_inline_field,omitempty" validate:""`
-	ArrayReferencedField *[]SomeObject       `json:"array_referenced_field,omitempty" validate:""`
+	ArrayInlineField     *[]int              `json:"array_inline_field,omitempty" validate:"dive"`
+	ArrayReferencedField *[]SomeObject       `json:"array_referenced_field,omitempty" validate:"dive"`
 	BoolField            *bool               `json:"bool_field,omitempty" validate:""`
 	ByteField            *[]byte             `json:"byte_field,omitempty" validate:""`
 	DateField            *openapi_types.Date `json:"date_field,omitempty" validate:""`
@@ -37,8 +37,8 @@ type EveryTypeOptional struct {
 
 // EveryTypeRequired defines model for EveryTypeRequired.
 type EveryTypeRequired struct {
-	ArrayInlineField     []int                `json:"array_inline_field" validate:"required"`
-	ArrayReferencedField []SomeObject         `json:"array_referenced_field" validate:"required"`
+	ArrayInlineField     []int                `json:"array_inline_field" validate:"required,dive"`
+	ArrayReferencedField []SomeObject         `json:"array_referenced_field" validate:"required,dive"`
 	BoolField            bool                 `json:"bool_field" validate:"required"`
 	ByteField            []byte               `json:"byte_field" validate:"required"`
 	DateField            openapi_types.Date   `json:"date_field" validate:"required"`
