@@ -129,6 +129,16 @@ func (w *ServerInterfaceWrapper) FindPets(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
 	}
 
+	// Validate params
+	err = ctx.Validate(params)
+	if err != nil {
+		return nil, &echo.HTTPError{
+			Code:     http.StatusBadRequest,
+			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Internal: err,
+		}
+	}
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler(ctx).FindPets(FindPetsContext{ctx}, params)
 	return err

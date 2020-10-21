@@ -50,10 +50,10 @@ type Pet struct {
 type FindPetsParams struct {
 
 	// tags to filter by
-	Tags *[]string `json:"tags,omitempty"`
+	Tags *[]string `json:"tags,omitempty" validate:""`
 
 	// maximum number of results to return
-	Limit *int32 `json:"limit,omitempty"`
+	Limit *int32 `json:"limit,omitempty" validate:""`
 }
 
 // AddPetJSONBody defines parameters for AddPet.

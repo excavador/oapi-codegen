@@ -89,13 +89,13 @@ type SimpleResponse struct {
 type GetWithArgsParams struct {
 
 	// An optional query argument
-	OptionalArgument *int64 `json:"optional_argument,omitempty"`
+	OptionalArgument *int64 `json:"optional_argument,omitempty" validate:""`
 
 	// An optional query argument
-	RequiredArgument int64 `json:"required_argument"`
+	RequiredArgument int64 `json:"required_argument" validate:"required"`
 
 	// An optional query argument
-	HeaderArgument *int32 `json:"header_argument,omitempty"`
+	HeaderArgument *int32 `json:"header_argument,omitempty" validate:""`
 }
 
 // CreateResourceJSONBody defines parameters for CreateResource.
@@ -108,7 +108,7 @@ type CreateResource2JSONBody Resource
 type CreateResource2Params struct {
 
 	// Some query argument
-	InlineQueryArgument *int `json:"inline_query_argument,omitempty"`
+	InlineQueryArgument *int `json:"inline_query_argument,omitempty" validate:""`
 }
 
 // UpdateResource3JSONBody defines parameters for UpdateResource3.

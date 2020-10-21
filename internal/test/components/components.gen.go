@@ -93,13 +93,13 @@ type ParamsWithAddPropsParams_P1 struct {
 type ParamsWithAddPropsParams struct {
 
 	// This parameter has additional properties
-	P1 ParamsWithAddPropsParams_P1 `json:"p1"`
+	P1 ParamsWithAddPropsParams_P1 `json:"p1" validate:"required"`
 
 	// This parameter has an anonymous inner property which needs to be
 	// turned into a proper type for additionalProperties to work
 	P2 struct {
 		Inner ParamsWithAddPropsParams_P2_Inner `json:"inner" validate:"required"`
-	} `json:"p2"`
+	} `json:"p2" validate:"required"`
 }
 
 // ParamsWithAddPropsParams_P2_Inner defines parameters for ParamsWithAddProps.
@@ -1432,6 +1432,16 @@ func (w *ServerInterfaceWrapper) ParamsWithAddProps(ctx echo.Context) error {
 	err = runtime.BindQueryParameter("form", true, true, "p2", ctx.QueryParams(), &params.P2)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter p2: %s", err))
+	}
+
+	// Validate params
+	err = ctx.Validate(params)
+	if err != nil {
+		return nil, &echo.HTTPError{
+			Code:     http.StatusBadRequest,
+			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Internal: err,
+		}
 	}
 
 	// Invoke the callback with all the unmarshalled arguments

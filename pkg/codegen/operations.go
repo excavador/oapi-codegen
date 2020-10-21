@@ -569,6 +569,7 @@ func GenerateTypeDefsForOperation(op OperationDefinition) []TypeDefinition {
 // This defines the schema for a parameters definition object which encapsulates
 // all the query, header and cookie parameters for an operation.
 func GenerateParamsTypes(op OperationDefinition) []TypeDefinition {
+	// todo: add validation tags
 	var typeDefs []TypeDefinition
 
 	objectParams := op.QueryParams
@@ -588,11 +589,16 @@ func GenerateParamsTypes(op OperationDefinition) []TypeDefinition {
 				Schema:   param.Schema,
 			})
 		}
+		var validationTags string
+		if param.Spec != nil && param.Spec.Schema != nil && param.Spec.Schema.Value != nil {
+			validationTags = goPlaygroundValidator(param.Spec.Schema.Value, param.Required, false)
+		}
 		prop := Property{
 			Description:   param.Spec.Description,
 			JsonFieldName: param.ParamName,
 			Required:      param.Required,
 			Schema:        pSchema,
+			validationTags: validationTags,
 		}
 		s.Properties = append(s.Properties, prop)
 	}

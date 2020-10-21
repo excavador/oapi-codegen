@@ -60,7 +60,7 @@ type Issue9JSONBody interface{}
 
 // Issue9Params defines parameters for Issue9.
 type Issue9Params struct {
-	Foo string `json:"foo"`
+	Foo string `json:"foo" validate:"required"`
 }
 
 // Issue185RequestBody defines body for Issue185 for application/json ContentType.
@@ -1291,6 +1291,16 @@ func (w *ServerInterfaceWrapper) Issue9(ctx echo.Context) error {
 	err = runtime.BindQueryParameter("form", true, true, "foo", ctx.QueryParams(), &params.Foo)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter foo: %s", err))
+	}
+
+	// Validate params
+	err = ctx.Validate(params)
+	if err != nil {
+		return nil, &echo.HTTPError{
+			Code:     http.StatusBadRequest,
+			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Internal: err,
+		}
 	}
 
 	// Invoke the callback with all the unmarshalled arguments

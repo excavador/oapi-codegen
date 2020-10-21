@@ -38,22 +38,22 @@ type Object struct {
 type GetCookieParams struct {
 
 	// primitive
-	P *int32 `json:"p,omitempty"`
+	P *int32 `json:"p,omitempty" validate:""`
 
 	// primitive
-	Ep *int32 `json:"ep,omitempty"`
+	Ep *int32 `json:"ep,omitempty" validate:""`
 
 	// exploded array
-	Ea *[]int32 `json:"ea,omitempty"`
+	Ea *[]int32 `json:"ea,omitempty" validate:""`
 
 	// array
-	A *[]int32 `json:"a,omitempty"`
+	A *[]int32 `json:"a,omitempty" validate:""`
 
 	// exploded object
-	Eo *Object `json:"eo,omitempty"`
+	Eo *Object `json:"eo,omitempty" validate:""`
 
 	// object
-	O *Object `json:"o,omitempty"`
+	O *Object `json:"o,omitempty" validate:""`
 
 	// complex object
 	Co *ComplexObject `json:"co,omitempty"`
@@ -63,22 +63,22 @@ type GetCookieParams struct {
 type GetHeaderParams struct {
 
 	// primitive
-	XPrimitive *int32 `json:"X-Primitive,omitempty"`
+	XPrimitive *int32 `json:"X-Primitive,omitempty" validate:""`
 
 	// primitive
-	XPrimitiveExploded *int32 `json:"X-Primitive-Exploded,omitempty"`
+	XPrimitiveExploded *int32 `json:"X-Primitive-Exploded,omitempty" validate:""`
 
 	// exploded array
-	XArrayExploded *[]int32 `json:"X-Array-Exploded,omitempty"`
+	XArrayExploded *[]int32 `json:"X-Array-Exploded,omitempty" validate:""`
 
 	// array
-	XArray *[]int32 `json:"X-Array,omitempty"`
+	XArray *[]int32 `json:"X-Array,omitempty" validate:""`
 
 	// exploded object
-	XObjectExploded *Object `json:"X-Object-Exploded,omitempty"`
+	XObjectExploded *Object `json:"X-Object-Exploded,omitempty" validate:""`
 
 	// object
-	XObject *Object `json:"X-Object,omitempty"`
+	XObject *Object `json:"X-Object,omitempty" validate:""`
 
 	// complex object
 	XComplexObject *ComplexObject `json:"X-Complex-Object,omitempty"`
@@ -88,29 +88,29 @@ type GetHeaderParams struct {
 type GetDeepObjectParams struct {
 
 	// deep object
-	DeepObj ComplexObject `json:"deepObj"`
+	DeepObj ComplexObject `json:"deepObj" validate:"required"`
 }
 
 // GetQueryFormParams defines parameters for GetQueryForm.
 type GetQueryFormParams struct {
 
 	// exploded array
-	Ea *[]int32 `json:"ea,omitempty"`
+	Ea *[]int32 `json:"ea,omitempty" validate:""`
 
 	// array
-	A *[]int32 `json:"a,omitempty"`
+	A *[]int32 `json:"a,omitempty" validate:""`
 
 	// exploded object
-	Eo *Object `json:"eo,omitempty"`
+	Eo *Object `json:"eo,omitempty" validate:""`
 
 	// object
-	O *Object `json:"o,omitempty"`
+	O *Object `json:"o,omitempty" validate:""`
 
 	// exploded primitive
-	Ep *int32 `json:"ep,omitempty"`
+	Ep *int32 `json:"ep,omitempty" validate:""`
 
 	// primitive
-	P *int32 `json:"p,omitempty"`
+	P *int32 `json:"p,omitempty" validate:""`
 
 	// complex object
 	Co *ComplexObject `json:"co,omitempty"`
@@ -2776,6 +2776,16 @@ func (w *ServerInterfaceWrapper) GetCookie(ctx echo.Context) error {
 
 	}
 
+	// Validate params
+	err = ctx.Validate(params)
+	if err != nil {
+		return nil, &echo.HTTPError{
+			Code:     http.StatusBadRequest,
+			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Internal: err,
+		}
+	}
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler(ctx).GetCookie(GetCookieContext{ctx}, params)
 	return err
@@ -2893,6 +2903,16 @@ func (w *ServerInterfaceWrapper) GetHeader(ctx echo.Context) error {
 		}
 
 		params.XComplexObject = &XComplexObject
+	}
+
+	// Validate params
+	err = ctx.Validate(params)
+	if err != nil {
+		return nil, &echo.HTTPError{
+			Code:     http.StatusBadRequest,
+			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Internal: err,
+		}
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
@@ -3054,6 +3074,16 @@ func (w *ServerInterfaceWrapper) GetDeepObject(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter deepObj: %s", err))
 	}
 
+	// Validate params
+	err = ctx.Validate(params)
+	if err != nil {
+		return nil, &echo.HTTPError{
+			Code:     http.StatusBadRequest,
+			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Internal: err,
+		}
+	}
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler(ctx).GetDeepObject(GetDeepObjectContext{ctx}, params)
 	return err
@@ -3118,6 +3148,16 @@ func (w *ServerInterfaceWrapper) GetQueryForm(ctx echo.Context) error {
 		}
 		params.Co = &value
 
+	}
+
+	// Validate params
+	err = ctx.Validate(params)
+	if err != nil {
+		return nil, &echo.HTTPError{
+			Code:     http.StatusBadRequest,
+			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Internal: err,
+		}
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
