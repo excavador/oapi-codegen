@@ -88,8 +88,11 @@ func (w *ServerInterfaceWrapper) {{.OperationId}} (ctx echo.Context) error {
 {{end}}
 {{end}}
 
+{{- if .CookieParams }}
+var cookie *http.Cookie
+{{- end }}
 {{range .CookieParams}}
-    if cookie, err := ctx.Cookie("{{.ParamName}}"); err == nil {
+    if cookie, err = ctx.Cookie("{{.ParamName}}"); err == nil {
     {{if .IsPassThrough}}
     params.{{.GoName}} = {{if not .Required}}&{{end}}cookie.Value
     {{end}}
