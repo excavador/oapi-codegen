@@ -20,7 +20,7 @@ type StructA struct {
 
 // StructB defines model for StructB.
 type StructB struct {
-	ListItem *[]string `json:"listItem,omitempty" validate:"gte=1,dive"`
+	ListItem *[]string `json:"listItem,omitempty" validate:"gte=1,dive,pass"`
 }
 
 // StructC defines model for StructC.
@@ -30,5 +30,5 @@ type StructC struct {
 
 // StructD defines model for StructD.
 type StructD struct {
-	ArrayOfStructA []StructA `json:"array_of_struct_a" validate:"required,dive"`
+	ArrayOfStructA []StructA `json:"array_of_struct_a" validate:"required,dive,pass"`
 }

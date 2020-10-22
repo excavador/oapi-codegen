@@ -34,7 +34,7 @@ type NewPet struct {
 	Name string `json:"name" validate:"required"`
 
 	// Type of the pet
-	Tag *string `json:"tag,omitempty" validate:""`
+	Tag *string `json:"tag,omitempty"`
 }
 
 // Pet defines model for Pet.
@@ -51,10 +51,10 @@ type Pet struct {
 type FindPetsParams struct {
 
 	// tags to filter by
-	Tags *[]string `json:"tags,omitempty" validate:""`
+	Tags *[]string `json:"tags,omitempty"`
 
 	// maximum number of results to return
-	Limit *int32 `json:"limit,omitempty" validate:""`
+	Limit *int32 `json:"limit,omitempty"`
 }
 
 // AddPetJSONBody defines parameters for AddPet.

@@ -43,8 +43,8 @@ type GenericObject map[string]interface{}
 
 // NullableProperties defines model for NullableProperties.
 type NullableProperties struct {
-	Optional            *string `json:"optional,omitempty" validate:""`
-	OptionalAndNullable *string `json:"optionalAndNullable" validate:""`
+	Optional            *string `json:"optional,omitempty"`
+	OptionalAndNullable *string `json:"optionalAndNullable"`
 	Required            string  `json:"required" validate:"required"`
 	RequiredAndNullable *string `json:"requiredAndNullable" validate:"required"`
 }
@@ -631,10 +631,10 @@ type EnsureEverythingIsReferencedResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *struct {
-		AnyType1 *AnyType1 `json:"anyType1,omitempty" validate:""`
+		AnyType1 *AnyType1 `json:"anyType1,omitempty"`
 
 		// This should be an interface{}
-		AnyType2         *AnyType2         `json:"anyType2,omitempty" validate:""`
+		AnyType2         *AnyType2         `json:"anyType2,omitempty"`
 		CustomStringType *CustomStringType `json:"customStringType,omitempty" validate:"custom"`
 	}
 }
@@ -880,10 +880,10 @@ func ParseEnsureEverythingIsReferencedResponse(rsp *http.Response) (*EnsureEvery
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			AnyType1 *AnyType1 `json:"anyType1,omitempty" validate:""`
+			AnyType1 *AnyType1 `json:"anyType1,omitempty"`
 
 			// This should be an interface{}
-			AnyType2         *AnyType2         `json:"anyType2,omitempty" validate:""`
+			AnyType2         *AnyType2         `json:"anyType2,omitempty"`
 			CustomStringType *CustomStringType `json:"customStringType,omitempty" validate:"custom"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -1074,10 +1074,10 @@ type EnsureEverythingIsReferencedContext struct {
 }
 
 func (c *EnsureEverythingIsReferencedContext) JSON200(resp struct {
-	AnyType1 *AnyType1 `json:"anyType1,omitempty" validate:""`
+	AnyType1 *AnyType1 `json:"anyType1,omitempty"`
 
 	// This should be an interface{}
-	AnyType2         *AnyType2         `json:"anyType2,omitempty" validate:""`
+	AnyType2         *AnyType2         `json:"anyType2,omitempty"`
 	CustomStringType *CustomStringType `json:"customStringType,omitempty" validate:"custom"`
 }) error {
 	err := c.Validate(resp)
@@ -1296,9 +1296,9 @@ func (w *ServerInterfaceWrapper) Issue9(ctx echo.Context) error {
 	// Validate params
 	err = ctx.Validate(params)
 	if err != nil {
-		return nil, &echo.HTTPError{
+		return &echo.HTTPError{
 			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
 			Internal: err,
 		}
 	}

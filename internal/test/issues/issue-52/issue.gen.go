@@ -26,18 +26,18 @@ type ArrayValue []Value
 
 // Document defines model for Document.
 type Document struct {
-	Fields *Document_Fields `json:"fields,omitempty" validate:""`
+	Fields *Document_Fields `json:"fields,omitempty"`
 }
 
 // Document_Fields defines model for Document.Fields.
 type Document_Fields struct {
-	AdditionalProperties map[string]Value `json:"-"`
+	AdditionalProperties map[string]Value `json:"-" validate:"dive,pass"`
 }
 
 // Value defines model for Value.
 type Value struct {
-	ArrayValue  *ArrayValue `json:"arrayValue,omitempty" validate:"dive"`
-	StringValue *string     `json:"stringValue,omitempty" validate:""`
+	ArrayValue  *ArrayValue `json:"arrayValue,omitempty" validate:"dive,pass"`
+	StringValue *string     `json:"stringValue,omitempty"`
 }
 
 // Getter for additional properties for Document_Fields. Returns the specified

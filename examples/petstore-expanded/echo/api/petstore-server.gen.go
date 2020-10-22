@@ -132,9 +132,9 @@ func (w *ServerInterfaceWrapper) FindPets(ctx echo.Context) error {
 	// Validate params
 	err = ctx.Validate(params)
 	if err != nil {
-		return nil, &echo.HTTPError{
+		return &echo.HTTPError{
 			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
 			Internal: err,
 		}
 	}

@@ -27,8 +27,8 @@ import (
 type AdditionalPropertiesObject1 struct {
 	Id                   int            `json:"id" validate:"required"`
 	Name                 string         `json:"name" validate:"required"`
-	Optional             *string        `json:"optional,omitempty" validate:""`
-	AdditionalProperties map[string]int `json:"-"`
+	Optional             *string        `json:"optional,omitempty"`
+	AdditionalProperties map[string]int `json:"-" validate:"dive,pass"`
 }
 
 // AdditionalPropertiesObject2 defines model for AdditionalPropertiesObject2.
@@ -40,25 +40,25 @@ type AdditionalPropertiesObject2 struct {
 // AdditionalPropertiesObject3 defines model for AdditionalPropertiesObject3.
 type AdditionalPropertiesObject3 struct {
 	Name                 string                 `json:"name" validate:"required"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	AdditionalProperties map[string]interface{} `json:"-" validate:"dive,pass"`
 }
 
 // AdditionalPropertiesObject4 defines model for AdditionalPropertiesObject4.
 type AdditionalPropertiesObject4 struct {
 	Inner                AdditionalPropertiesObject4_Inner `json:"inner" validate:"required"`
 	Name                 string                            `json:"name" validate:"required"`
-	AdditionalProperties map[string]interface{}            `json:"-"`
+	AdditionalProperties map[string]interface{}            `json:"-" validate:"dive,pass"`
 }
 
 // AdditionalPropertiesObject4_Inner defines model for AdditionalPropertiesObject4.Inner.
 type AdditionalPropertiesObject4_Inner struct {
 	Name                 string                 `json:"name" validate:"required"`
-	AdditionalProperties map[string]interface{} `json:"-"`
+	AdditionalProperties map[string]interface{} `json:"-" validate:"dive,pass"`
 }
 
 // AdditionalPropertiesObject5 defines model for AdditionalPropertiesObject5.
 type AdditionalPropertiesObject5 struct {
-	AdditionalProperties map[string]SchemaObject `json:"-"`
+	AdditionalProperties map[string]SchemaObject `json:"-" validate:"dive,pass"`
 }
 
 // ObjectWithJsonField defines model for ObjectWithJsonField.
@@ -86,7 +86,7 @@ type RequestBody struct {
 
 // ParamsWithAddPropsParams_P1 defines parameters for ParamsWithAddProps.
 type ParamsWithAddPropsParams_P1 struct {
-	AdditionalProperties map[string]interface{} `json:"-"`
+	AdditionalProperties map[string]interface{} `json:"-" validate:"dive,pass"`
 }
 
 // ParamsWithAddPropsParams defines parameters for ParamsWithAddProps.
@@ -104,19 +104,19 @@ type ParamsWithAddPropsParams struct {
 
 // ParamsWithAddPropsParams_P2_Inner defines parameters for ParamsWithAddProps.
 type ParamsWithAddPropsParams_P2_Inner struct {
-	AdditionalProperties map[string]string `json:"-"`
+	AdditionalProperties map[string]string `json:"-" validate:"dive,pass"`
 }
 
 // BodyWithAddPropsJSONBody defines parameters for BodyWithAddProps.
 type BodyWithAddPropsJSONBody struct {
 	Inner                BodyWithAddPropsJSONBody_Inner `json:"inner" validate:"required"`
 	Name                 string                         `json:"name" validate:"required"`
-	AdditionalProperties map[string]interface{}         `json:"-"`
+	AdditionalProperties map[string]interface{}         `json:"-" validate:"dive,pass"`
 }
 
 // BodyWithAddPropsJSONBody_Inner defines parameters for BodyWithAddProps.
 type BodyWithAddPropsJSONBody_Inner struct {
-	AdditionalProperties map[string]int `json:"-"`
+	AdditionalProperties map[string]int `json:"-" validate:"dive,pass"`
 }
 
 // EnsureEverythingIsReferencedRequestBody defines body for EnsureEverythingIsReferenced for application/json ContentType.
@@ -1076,20 +1076,20 @@ type EnsureEverythingIsReferencedResponse struct {
 	JSON200      *struct {
 
 		// Has additional properties with schema for dictionaries
-		Five *AdditionalPropertiesObject5 `json:"five,omitempty" validate:""`
+		Five *AdditionalPropertiesObject5 `json:"five,omitempty"`
 
 		// Has anonymous field which has additional properties
-		Four      *AdditionalPropertiesObject4 `json:"four,omitempty" validate:""`
-		JsonField *ObjectWithJsonField         `json:"jsonField,omitempty" validate:""`
+		Four      *AdditionalPropertiesObject4 `json:"four,omitempty"`
+		JsonField *ObjectWithJsonField         `json:"jsonField,omitempty"`
 
 		// Has additional properties of type int
-		One *AdditionalPropertiesObject1 `json:"one,omitempty" validate:""`
+		One *AdditionalPropertiesObject1 `json:"one,omitempty"`
 
 		// Allows any additional property
-		Three *AdditionalPropertiesObject3 `json:"three,omitempty" validate:""`
+		Three *AdditionalPropertiesObject3 `json:"three,omitempty"`
 
 		// Does not allow additional properties
-		Two *AdditionalPropertiesObject2 `json:"two,omitempty" validate:""`
+		Two *AdditionalPropertiesObject2 `json:"two,omitempty"`
 	}
 	JSONDefault *struct {
 		Field SchemaObject `json:"Field" validate:"required"`
@@ -1215,20 +1215,20 @@ func ParseEnsureEverythingIsReferencedResponse(rsp *http.Response) (*EnsureEvery
 		var dest struct {
 
 			// Has additional properties with schema for dictionaries
-			Five *AdditionalPropertiesObject5 `json:"five,omitempty" validate:""`
+			Five *AdditionalPropertiesObject5 `json:"five,omitempty"`
 
 			// Has anonymous field which has additional properties
-			Four      *AdditionalPropertiesObject4 `json:"four,omitempty" validate:""`
-			JsonField *ObjectWithJsonField         `json:"jsonField,omitempty" validate:""`
+			Four      *AdditionalPropertiesObject4 `json:"four,omitempty"`
+			JsonField *ObjectWithJsonField         `json:"jsonField,omitempty"`
 
 			// Has additional properties of type int
-			One *AdditionalPropertiesObject1 `json:"one,omitempty" validate:""`
+			One *AdditionalPropertiesObject1 `json:"one,omitempty"`
 
 			// Allows any additional property
-			Three *AdditionalPropertiesObject3 `json:"three,omitempty" validate:""`
+			Three *AdditionalPropertiesObject3 `json:"three,omitempty"`
 
 			// Does not allow additional properties
-			Two *AdditionalPropertiesObject2 `json:"two,omitempty" validate:""`
+			Two *AdditionalPropertiesObject2 `json:"two,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -1310,20 +1310,20 @@ type EnsureEverythingIsReferencedContext struct {
 func (c *EnsureEverythingIsReferencedContext) JSON200(resp struct {
 
 	// Has additional properties with schema for dictionaries
-	Five *AdditionalPropertiesObject5 `json:"five,omitempty" validate:""`
+	Five *AdditionalPropertiesObject5 `json:"five,omitempty"`
 
 	// Has anonymous field which has additional properties
-	Four      *AdditionalPropertiesObject4 `json:"four,omitempty" validate:""`
-	JsonField *ObjectWithJsonField         `json:"jsonField,omitempty" validate:""`
+	Four      *AdditionalPropertiesObject4 `json:"four,omitempty"`
+	JsonField *ObjectWithJsonField         `json:"jsonField,omitempty"`
 
 	// Has additional properties of type int
-	One *AdditionalPropertiesObject1 `json:"one,omitempty" validate:""`
+	One *AdditionalPropertiesObject1 `json:"one,omitempty"`
 
 	// Allows any additional property
-	Three *AdditionalPropertiesObject3 `json:"three,omitempty" validate:""`
+	Three *AdditionalPropertiesObject3 `json:"three,omitempty"`
 
 	// Does not allow additional properties
-	Two *AdditionalPropertiesObject2 `json:"two,omitempty" validate:""`
+	Two *AdditionalPropertiesObject2 `json:"two,omitempty"`
 }) error {
 	err := c.Validate(resp)
 	if err != nil {
@@ -1437,9 +1437,9 @@ func (w *ServerInterfaceWrapper) ParamsWithAddProps(ctx echo.Context) error {
 	// Validate params
 	err = ctx.Validate(params)
 	if err != nil {
-		return nil, &echo.HTTPError{
+		return &echo.HTTPError{
 			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
 			Internal: err,
 		}
 	}

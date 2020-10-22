@@ -25,10 +25,10 @@ import (
 type GetFooParams struct {
 
 	// base64. bytes. chi. context. echo. errors. fmt. gzip. http. io. ioutil. json. openapi3.
-	Foo *string `json:"Foo,omitempty" validate:""`
+	Foo *string `json:"Foo,omitempty"`
 
 	// openapi_types. path. runtime. strings. time.Duration time.Time url. xml. yaml.
-	Bar *string `json:"Bar,omitempty" validate:""`
+	Bar *string `json:"Bar,omitempty"`
 }
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
@@ -328,9 +328,9 @@ func (w *ServerInterfaceWrapper) GetFoo(ctx echo.Context) error {
 	// Validate params
 	err = ctx.Validate(params)
 	if err != nil {
-		return nil, &echo.HTTPError{
+		return &echo.HTTPError{
 			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
 			Internal: err,
 		}
 	}

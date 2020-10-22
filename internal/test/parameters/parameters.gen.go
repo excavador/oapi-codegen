@@ -38,22 +38,22 @@ type Object struct {
 type GetCookieParams struct {
 
 	// primitive
-	P *int32 `json:"p,omitempty" validate:""`
+	P *int32 `json:"p,omitempty"`
 
 	// primitive
-	Ep *int32 `json:"ep,omitempty" validate:""`
+	Ep *int32 `json:"ep,omitempty"`
 
 	// exploded array
-	Ea *[]int32 `json:"ea,omitempty" validate:""`
+	Ea *[]int32 `json:"ea,omitempty"`
 
 	// array
-	A *[]int32 `json:"a,omitempty" validate:""`
+	A *[]int32 `json:"a,omitempty"`
 
 	// exploded object
-	Eo *Object `json:"eo,omitempty" validate:""`
+	Eo *Object `json:"eo,omitempty"`
 
 	// object
-	O *Object `json:"o,omitempty" validate:""`
+	O *Object `json:"o,omitempty"`
 
 	// complex object
 	Co *ComplexObject `json:"co,omitempty"`
@@ -63,22 +63,22 @@ type GetCookieParams struct {
 type GetHeaderParams struct {
 
 	// primitive
-	XPrimitive *int32 `json:"X-Primitive,omitempty" validate:""`
+	XPrimitive *int32 `json:"X-Primitive,omitempty"`
 
 	// primitive
-	XPrimitiveExploded *int32 `json:"X-Primitive-Exploded,omitempty" validate:""`
+	XPrimitiveExploded *int32 `json:"X-Primitive-Exploded,omitempty"`
 
 	// exploded array
-	XArrayExploded *[]int32 `json:"X-Array-Exploded,omitempty" validate:""`
+	XArrayExploded *[]int32 `json:"X-Array-Exploded,omitempty"`
 
 	// array
-	XArray *[]int32 `json:"X-Array,omitempty" validate:""`
+	XArray *[]int32 `json:"X-Array,omitempty"`
 
 	// exploded object
-	XObjectExploded *Object `json:"X-Object-Exploded,omitempty" validate:""`
+	XObjectExploded *Object `json:"X-Object-Exploded,omitempty"`
 
 	// object
-	XObject *Object `json:"X-Object,omitempty" validate:""`
+	XObject *Object `json:"X-Object,omitempty"`
 
 	// complex object
 	XComplexObject *ComplexObject `json:"X-Complex-Object,omitempty"`
@@ -95,22 +95,22 @@ type GetDeepObjectParams struct {
 type GetQueryFormParams struct {
 
 	// exploded array
-	Ea *[]int32 `json:"ea,omitempty" validate:""`
+	Ea *[]int32 `json:"ea,omitempty"`
 
 	// array
-	A *[]int32 `json:"a,omitempty" validate:""`
+	A *[]int32 `json:"a,omitempty"`
 
 	// exploded object
-	Eo *Object `json:"eo,omitempty" validate:""`
+	Eo *Object `json:"eo,omitempty"`
 
 	// object
-	O *Object `json:"o,omitempty" validate:""`
+	O *Object `json:"o,omitempty"`
 
 	// exploded primitive
-	Ep *int32 `json:"ep,omitempty" validate:""`
+	Ep *int32 `json:"ep,omitempty"`
 
 	// primitive
-	P *int32 `json:"p,omitempty" validate:""`
+	P *int32 `json:"p,omitempty"`
 
 	// complex object
 	Co *ComplexObject `json:"co,omitempty"`
@@ -2779,9 +2779,9 @@ func (w *ServerInterfaceWrapper) GetCookie(ctx echo.Context) error {
 	// Validate params
 	err = ctx.Validate(params)
 	if err != nil {
-		return nil, &echo.HTTPError{
+		return &echo.HTTPError{
 			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
 			Internal: err,
 		}
 	}
@@ -2908,9 +2908,9 @@ func (w *ServerInterfaceWrapper) GetHeader(ctx echo.Context) error {
 	// Validate params
 	err = ctx.Validate(params)
 	if err != nil {
-		return nil, &echo.HTTPError{
+		return &echo.HTTPError{
 			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
 			Internal: err,
 		}
 	}
@@ -3077,9 +3077,9 @@ func (w *ServerInterfaceWrapper) GetDeepObject(ctx echo.Context) error {
 	// Validate params
 	err = ctx.Validate(params)
 	if err != nil {
-		return nil, &echo.HTTPError{
+		return &echo.HTTPError{
 			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
 			Internal: err,
 		}
 	}
@@ -3153,9 +3153,9 @@ func (w *ServerInterfaceWrapper) GetQueryForm(ctx echo.Context) error {
 	// Validate params
 	err = ctx.Validate(params)
 	if err != nil {
-		return nil, &echo.HTTPError{
+		return &echo.HTTPError{
 			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
+			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
 			Internal: err,
 		}
 	}

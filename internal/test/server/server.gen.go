@@ -15,30 +15,30 @@ import (
 
 // EveryTypeOptional defines model for EveryTypeOptional.
 type EveryTypeOptional struct {
-	ArrayInlineField     *[]int              `json:"array_inline_field,omitempty" validate:"dive"`
-	ArrayReferencedField *[]SomeObject       `json:"array_referenced_field,omitempty" validate:"dive"`
-	BoolField            *bool               `json:"bool_field,omitempty" validate:""`
-	ByteField            *[]byte             `json:"byte_field,omitempty" validate:""`
-	DateField            *openapi_types.Date `json:"date_field,omitempty" validate:""`
-	DateTimeField        *time.Time          `json:"date_time_field,omitempty" validate:""`
-	DoubleField          *float64            `json:"double_field,omitempty" validate:""`
-	FloatField           *float32            `json:"float_field,omitempty" validate:""`
+	ArrayInlineField     *[]int              `json:"array_inline_field,omitempty" validate:"dive,pass"`
+	ArrayReferencedField *[]SomeObject       `json:"array_referenced_field,omitempty" validate:"dive,pass"`
+	BoolField            *bool               `json:"bool_field,omitempty"`
+	ByteField            *[]byte             `json:"byte_field,omitempty"`
+	DateField            *openapi_types.Date `json:"date_field,omitempty"`
+	DateTimeField        *time.Time          `json:"date_time_field,omitempty"`
+	DoubleField          *float64            `json:"double_field,omitempty"`
+	FloatField           *float32            `json:"float_field,omitempty"`
 	InlineObjectField    *struct {
 		Name   string `json:"name" validate:"required"`
 		Number int    `json:"number" validate:"required"`
-	} `json:"inline_object_field,omitempty" validate:""`
-	Int32Field      *int32      `json:"int32_field,omitempty" validate:""`
-	Int64Field      *int64      `json:"int64_field,omitempty" validate:""`
-	IntField        *int        `json:"int_field,omitempty" validate:""`
-	NumberField     *float32    `json:"number_field,omitempty" validate:""`
-	ReferencedField *SomeObject `json:"referenced_field,omitempty" validate:""`
-	StringField     *string     `json:"string_field,omitempty" validate:""`
+	} `json:"inline_object_field,omitempty"`
+	Int32Field      *int32      `json:"int32_field,omitempty"`
+	Int64Field      *int64      `json:"int64_field,omitempty"`
+	IntField        *int        `json:"int_field,omitempty"`
+	NumberField     *float32    `json:"number_field,omitempty"`
+	ReferencedField *SomeObject `json:"referenced_field,omitempty"`
+	StringField     *string     `json:"string_field,omitempty"`
 }
 
 // EveryTypeRequired defines model for EveryTypeRequired.
 type EveryTypeRequired struct {
-	ArrayInlineField     []int                `json:"array_inline_field" validate:"required,dive"`
-	ArrayReferencedField []SomeObject         `json:"array_referenced_field" validate:"required,dive"`
+	ArrayInlineField     []int                `json:"array_inline_field" validate:"required,dive,pass"`
+	ArrayReferencedField []SomeObject         `json:"array_referenced_field" validate:"required,dive,pass"`
 	BoolField            bool                 `json:"bool_field" validate:"required"`
 	ByteField            []byte               `json:"byte_field" validate:"required"`
 	DateField            openapi_types.Date   `json:"date_field" validate:"required"`
@@ -60,7 +60,7 @@ type EveryTypeRequired struct {
 
 // ReservedKeyword defines model for ReservedKeyword.
 type ReservedKeyword struct {
-	Channel *string `json:"channel,omitempty" validate:""`
+	Channel *string `json:"channel,omitempty"`
 }
 
 // Resource defines model for Resource.
@@ -89,13 +89,13 @@ type SimpleResponse struct {
 type GetWithArgsParams struct {
 
 	// An optional query argument
-	OptionalArgument *int64 `json:"optional_argument,omitempty" validate:""`
+	OptionalArgument *int64 `json:"optional_argument,omitempty"`
 
 	// An optional query argument
 	RequiredArgument int64 `json:"required_argument" validate:"required"`
 
 	// An optional query argument
-	HeaderArgument *int32 `json:"header_argument,omitempty" validate:""`
+	HeaderArgument *int32 `json:"header_argument,omitempty"`
 }
 
 // CreateResourceJSONBody defines parameters for CreateResource.
@@ -108,13 +108,13 @@ type CreateResource2JSONBody Resource
 type CreateResource2Params struct {
 
 	// Some query argument
-	InlineQueryArgument *int `json:"inline_query_argument,omitempty" validate:""`
+	InlineQueryArgument *int `json:"inline_query_argument,omitempty"`
 }
 
 // UpdateResource3JSONBody defines parameters for UpdateResource3.
 type UpdateResource3JSONBody struct {
-	Id   *int    `json:"id,omitempty" validate:""`
-	Name *string `json:"name,omitempty" validate:""`
+	Id   *int    `json:"id,omitempty"`
+	Name *string `json:"name,omitempty"`
 }
 
 // CreateResourceRequestBody defines body for CreateResource for application/json ContentType.
