@@ -214,10 +214,19 @@ func (t *testServer) GetCookie(ctx GetCookieContext, params GetCookieParams) err
 	return nil
 }
 
+type (
+	Validator struct{}
+)
+
+func (Validator) Validate(i interface{}) error {
+	return nil
+}
+
 func TestParameterBinding(t *testing.T) {
 	var ts testServer
 	e := echo.New()
 	e.Use(middleware.Logger())
+	e.Validator = Validator{}
 	RegisterHandlers(e, &ts, "")
 
 	expectedObject := Object{
@@ -586,6 +595,7 @@ func TestClientQueryParams(t *testing.T) {
 	var ts testServer
 	e := echo.New()
 	e.Use(middleware.Logger())
+	e.Validator = Validator{}
 	RegisterHandlers(e, &ts, "")
 	server := "http://example.com"
 

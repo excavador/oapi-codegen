@@ -29,6 +29,9 @@ func init() {
 		panic("language not found")
 	}
 	validate = validator.New()
+	validate.RegisterValidation("pass", func(fl validator.FieldLevel) bool {
+		return true
+	})
 	if err := en_translations.RegisterDefaultTranslations(validate, translator); err != nil {
 		panic("err")
 	}

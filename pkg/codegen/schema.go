@@ -459,10 +459,19 @@ func goPlaygroundValidator(s *openapi3.Schema, required bool, dive bool) string 
 	}
 
 	if dive {
-		values = append(values, "dive")
+		// "pass" validation is added to fix panic() when "dive" validating a slice or a map of primitives
+		// it is required to register "pass" validation:
+		// v.RegisterValidation("pass", func(fl validator.FieldLevel) bool {
+		//      return true
+		// })
+		values = append(values, "dive,pass")
 	}
 
-	return fmt.Sprintf(`validate:"%s"`, strings.Join(values, ","))
+	if len(values) > 0 {
+		return fmt.Sprintf(`validate:"%s"`, strings.Join(values, ","))
+	} else {
+		return ""
+	}
 }
 
 func GenStructFromSchema(schema Schema) string {
@@ -478,7 +487,7 @@ func GenStructFromSchema(schema Schema) string {
 		}
 
 		objectParts = append(objectParts,
-			fmt.Sprintf("AdditionalProperties map[string]%s `json:\"-\"`", addPropsType))
+			fmt.Sprintf("AdditionalProperties map[string]%s `json:\"-\" validate:\"dive,pass\"`", addPropsType))
 	}
 	objectParts = append(objectParts, "}")
 	return strings.Join(objectParts, "\n")
