@@ -2694,7 +2694,9 @@ func (w *ServerInterfaceWrapper) GetCookie(ctx echo.Context) error {
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetCookieParams
 
-	if cookie, err := ctx.Cookie("p"); err == nil {
+	var cookie *http.Cookie
+
+	if cookie, err = ctx.Cookie("p"); err == nil {
 
 		var value int32
 		err = runtime.BindStyledParameter("simple", false, "p", cookie.Value, &value)
@@ -2705,7 +2707,7 @@ func (w *ServerInterfaceWrapper) GetCookie(ctx echo.Context) error {
 
 	}
 
-	if cookie, err := ctx.Cookie("ep"); err == nil {
+	if cookie, err = ctx.Cookie("ep"); err == nil {
 
 		var value int32
 		err = runtime.BindStyledParameter("simple", true, "ep", cookie.Value, &value)
@@ -2716,7 +2718,7 @@ func (w *ServerInterfaceWrapper) GetCookie(ctx echo.Context) error {
 
 	}
 
-	if cookie, err := ctx.Cookie("ea"); err == nil {
+	if cookie, err = ctx.Cookie("ea"); err == nil {
 
 		var value []int32
 		err = runtime.BindStyledParameter("simple", true, "ea", cookie.Value, &value)
@@ -2727,7 +2729,7 @@ func (w *ServerInterfaceWrapper) GetCookie(ctx echo.Context) error {
 
 	}
 
-	if cookie, err := ctx.Cookie("a"); err == nil {
+	if cookie, err = ctx.Cookie("a"); err == nil {
 
 		var value []int32
 		err = runtime.BindStyledParameter("simple", false, "a", cookie.Value, &value)
@@ -2738,7 +2740,7 @@ func (w *ServerInterfaceWrapper) GetCookie(ctx echo.Context) error {
 
 	}
 
-	if cookie, err := ctx.Cookie("eo"); err == nil {
+	if cookie, err = ctx.Cookie("eo"); err == nil {
 
 		var value Object
 		err = runtime.BindStyledParameter("simple", true, "eo", cookie.Value, &value)
@@ -2749,7 +2751,7 @@ func (w *ServerInterfaceWrapper) GetCookie(ctx echo.Context) error {
 
 	}
 
-	if cookie, err := ctx.Cookie("o"); err == nil {
+	if cookie, err = ctx.Cookie("o"); err == nil {
 
 		var value Object
 		err = runtime.BindStyledParameter("simple", false, "o", cookie.Value, &value)
@@ -2760,7 +2762,7 @@ func (w *ServerInterfaceWrapper) GetCookie(ctx echo.Context) error {
 
 	}
 
-	if cookie, err := ctx.Cookie("co"); err == nil {
+	if cookie, err = ctx.Cookie("co"); err == nil {
 
 		var value ComplexObject
 		var decoded string
