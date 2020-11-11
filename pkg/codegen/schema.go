@@ -358,7 +358,7 @@ func jsonTag(p Property) string {
 func goPlaygroundValidator(s *openapi3.Schema, required bool, dive bool) string {
 	var values []string
 
-	if required && s.Type != "boolean"{
+	if required && s.Type != "boolean" && !dive {
 		values = append(values, "required")
 	}
 

@@ -30,5 +30,5 @@ type StructC struct {
 
 // StructD defines model for StructD.
 type StructD struct {
-	ArrayOfStructA []StructA `json:"array_of_struct_a" validate:"required,dive,pass"`
+	ArrayOfStructA []StructA `json:"array_of_struct_a" validate:"dive,pass"`
 }
