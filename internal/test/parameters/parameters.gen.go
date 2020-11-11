@@ -24,7 +24,7 @@ import (
 // ComplexObject defines model for ComplexObject.
 type ComplexObject struct {
 	Id      int    `json:"Id" validate:"required"`
-	IsAdmin bool   `json:"IsAdmin" validate:"required"`
+	IsAdmin bool   `json:"IsAdmin"`
 	Object  Object `json:"Object" validate:"required"`
 }
 

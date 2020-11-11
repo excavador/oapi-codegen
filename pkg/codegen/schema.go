@@ -358,7 +358,7 @@ func jsonTag(p Property) string {
 func goPlaygroundValidator(s *openapi3.Schema, required bool, dive bool) string {
 	var values []string
 
-	if required {
+	if required && s.Type != "boolean"{
 		values = append(values, "required")
 	}
 
@@ -434,18 +434,6 @@ func goPlaygroundValidator(s *openapi3.Schema, required bool, dive bool) string 
 		// todo: generate custom validation function with precompiled regex
 	}
 
-	if len(s.Enum) > 0 {
-		var items []string
-		for _, item := range s.Enum {
-			typed := item.(string)
-			if strings.Contains(typed, " ") {
-				typed = fmt.Sprintf("'%s'", item)
-			}
-			items = append(items, typed)
-		}
-		values = append(values, "oneof="+strings.Join(items, " "))
-	}
-
 	if s.UniqueItems {
 		values = append(values, "unique")
 	}
@@ -465,6 +453,18 @@ func goPlaygroundValidator(s *openapi3.Schema, required bool, dive bool) string 
 		//      return true
 		// })
 		values = append(values, "dive,pass")
+	}
+
+	if len(s.Enum) > 0 {
+		var items []string
+		for _, item := range s.Enum {
+			typed := item.(string)
+			if strings.Contains(typed, " ") {
+				typed = fmt.Sprintf("'%s'", item)
+			}
+			items = append(items, typed)
+		}
+		values = append(values, "oneof="+strings.Join(items, " "))
 	}
 
 	if len(values) > 0 {

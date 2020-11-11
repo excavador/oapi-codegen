@@ -39,7 +39,7 @@ type EveryTypeOptional struct {
 type EveryTypeRequired struct {
 	ArrayInlineField     []int                `json:"array_inline_field" validate:"required,dive,pass"`
 	ArrayReferencedField []SomeObject         `json:"array_referenced_field" validate:"required,dive,pass"`
-	BoolField            bool                 `json:"bool_field" validate:"required"`
+	BoolField            bool                 `json:"bool_field"`
 	ByteField            []byte               `json:"byte_field" validate:"required"`
 	DateField            openapi_types.Date   `json:"date_field" validate:"required"`
 	DateTimeField        time.Time            `json:"date_time_field" validate:"required"`
