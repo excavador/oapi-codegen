@@ -148,10 +148,6 @@ func genResponseHelpers(op *OperationDefinition) string {
 					case StringInArray(contentTypeName, contentTypesYAML):
 						buffer.WriteString(fmt.Sprintf(`
 func (c *%sContext) YAML%s(resp %s) error {
-	err := c.Validate(resp)
-	if err != nil {
-		return fmt.Errorf("response validation failed: %%s", err)
-	}
 	var out []byte
 	out, err = yaml.Marshal(resp)
 	if err != nil {
@@ -168,10 +164,6 @@ func (c *%sContext) YAML%s(resp %s) error {
 
 					buffer.WriteString(fmt.Sprintf(`
 func (c *%sContext) %s(resp %s) error {
-	err := c.Validate(resp)
-	if err != nil {
-		return fmt.Errorf("response validation failed: %%s", err)
-	}
 	return c.%s(%s, resp)
 }
 `, op.OperationId, typeName+responseName, responseSchema.TypeDecl(), typeName, responseName))
@@ -241,14 +233,6 @@ func (c *%sContext) Bind%s() (*%s, error) {
 	var result %s
 	if err = c.Bind(&result); err != nil {
 		return nil, err
-	}
-
-	if err = c.Validate(result); err != nil {
-		return nil, &echo.HTTPError{
-			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %%s", err.Error()),
-			Internal: err,
-		}
 	}
 
 	return &result, nil

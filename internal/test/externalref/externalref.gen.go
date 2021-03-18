@@ -4,6 +4,8 @@
 package externalref
 
 import (
+	_ "embed"
+
 	externalRef0 "github.com/deepmap/oapi-codegen/internal/test/externalref/packageA"
 	externalRef1 "github.com/deepmap/oapi-codegen/internal/test/externalref/packageB"
 )
