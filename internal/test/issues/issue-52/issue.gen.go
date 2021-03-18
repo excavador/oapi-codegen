@@ -4,10 +4,8 @@
 package issue_52
 
 import (
-	"bytes"
-	"compress/gzip"
 	"context"
-	"encoding/base64"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -18,7 +16,6 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/labstack/echo/v4"
-	"github.com/pkg/errors"
 )
 
 // ArrayValue defines model for ArrayValue.
@@ -26,71 +23,13 @@ type ArrayValue []Value
 
 // Document defines model for Document.
 type Document struct {
-	Fields *Document_Fields `json:"fields,omitempty"`
-}
-
-// Document_Fields defines model for Document.Fields.
-type Document_Fields struct {
-	AdditionalProperties map[string]Value `json:"-" validate:"dive,pass"`
+	Fields *map[string]interface{} `json:"fields,omitempty"`
 }
 
 // Value defines model for Value.
 type Value struct {
 	ArrayValue  *ArrayValue `json:"arrayValue,omitempty" validate:"dive,pass"`
 	StringValue *string     `json:"stringValue,omitempty"`
-}
-
-// Getter for additional properties for Document_Fields. Returns the specified
-// element and whether it was found
-func (a Document_Fields) Get(fieldName string) (value Value, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for Document_Fields
-func (a *Document_Fields) Set(fieldName string, value Value) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]Value)
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for Document_Fields to handle AdditionalProperties
-func (a *Document_Fields) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]Value)
-		for fieldName, fieldBuf := range object {
-			var fieldVal Value
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return errors.Wrap(err, fmt.Sprintf("error unmarshaling field %s", fieldName))
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for Document_Fields to handle AdditionalProperties
-func (a Document_Fields) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling '%s'", fieldName))
-		}
-	}
-	return json.Marshal(object)
 }
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
@@ -314,10 +253,6 @@ type ExampleGetContext struct {
 }
 
 func (c *ExampleGetContext) JSON200(resp Document) error {
-	err := c.Validate(resp)
-	if err != nil {
-		return fmt.Errorf("response validation failed: %s", err)
-	}
 	return c.JSON(200, resp)
 }
 
@@ -367,37 +302,48 @@ func (wrapper ServerInterfaceWrapper) RegisterHandlers(router EchoRouter, pathPr
 
 }
 
-// Base64 encoded, gzipped, json marshaled Swagger object
-var swaggerSpec = []string{
+//go:embed spec.yaml
+var spec []byte
 
-	"H4sIAAAAAAAC/5RSQU/zMAz9K5W/71i1ZdxyQwIhhBCcOHExibdmpEmUuBPT1P+OnG5jEwjEqcmr3/Pz",
-	"i3egwxCDJ88Z1A6y7mnAcrxKCbfP6EaSm2UaCvw/0RIU/Gs/ie2e1c7VUw28jQQKUCTkfh30OJBnEYgp",
-	"REpsqcgtLTlTTmiMZRs8uqezir80DK9r0gzTV6SG4yjnBvBszJ+anQQy1ZA5Wb86EvftZvQ7AwJZvwxS",
-	"bChnnWyUcUHBA75RlcdEFffIVSI9pmw3VIlErjBR1aM3jkw1e3fbFw81sGUnLegdh+gIathQyrNm13TN",
-	"hfgMkTxGCwoum65ZQA0RuS+jtwei2sGKyuOIOoqtOwMKbub/t8RQQ6Icg89zaouuk48OnvfPijE6qwu3",
-	"XWfxcNim33I9LkfJyNBpNI/3gk7T9BEAAP//t/QkwqkCAAA=",
+// returns a raw spec
+func RawSpec() []byte {
+	return spec
+}
+
+// Constructs a synthetic filesystem for resolving external references when loading openapi specifications.
+func PathToRawSpec(pathPrefix string) map[string]func() []byte {
+	// todo: fix spec validator so that external references are correct;
+	// now they can point to api.yaml files whereas the real file name is different
+	var res = map[string]func() []byte{
+		path.Join(pathPrefix, "spec.yaml"): RawSpec,
+		path.Join(pathPrefix, "api.yaml"):  RawSpec,
+	}
+
+	return res
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code
-// in this file.
-func GetSwagger() (*openapi3.Swagger, error) {
-	zipped, err := base64.StdEncoding.DecodeString(strings.Join(swaggerSpec, ""))
-	if err != nil {
-		return nil, fmt.Errorf("error base64 decoding spec: %s", err)
-	}
-	zr, err := gzip.NewReader(bytes.NewReader(zipped))
-	if err != nil {
-		return nil, fmt.Errorf("error decompressing spec: %s", err)
-	}
-	var buf bytes.Buffer
-	_, err = buf.ReadFrom(zr)
-	if err != nil {
-		return nil, fmt.Errorf("error decompressing spec: %s", err)
-	}
+// in this file. The external references of Swagger specification are resolved.
+// The logic of resolving external references is tightly connected to "import-mapping" feature.
+// Externally referenced files must be embedded in the corresponding golang packages.
+// Urls can be supported but this task was out of the scope.
+func GetSwagger() (swagger *openapi3.Swagger, err error) {
+	var resolvePath = PathToRawSpec("")
 
-	swagger, err := openapi3.NewSwaggerLoader().LoadSwaggerFromData(buf.Bytes())
-	if err != nil {
-		return nil, fmt.Errorf("error loading Swagger: %s", err)
+	loader := openapi3.NewSwaggerLoader()
+	loader.IsExternalRefsAllowed = true
+	loader.ReadFromURIFunc = func(loader *openapi3.SwaggerLoader, url *url.URL) ([]byte, error) {
+		var pathToFile = url.String()
+		if spec, ok := resolvePath[pathToFile]; !ok {
+			err1 := fmt.Errorf("path not found: %s", pathToFile)
+			return nil, err1
+		} else {
+			return spec(), nil
+		}
 	}
-	return swagger, nil
+	swagger, err = loader.LoadSwaggerFromData(spec)
+	if err != nil {
+		return
+	}
+	return
 }

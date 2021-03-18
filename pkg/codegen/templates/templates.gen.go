@@ -987,17 +987,6 @@ var cookie *http.Cookie
 {{end}}{{/* .CookieParams */}}
 
 {{end}}{{/* .RequiresParamObject */}}
-	{{- if .RequiresParamObject }}
-    // Validate params
-    err = ctx.Validate(params)
-    if err != nil {
-        return &echo.HTTPError{
-            Code:     http.StatusBadRequest,
-            Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
-            Internal: err,
-        }
-    }
-    {{- end }}
 
     // Invoke the callback with all the unmarshalled arguments
     err = w.Handler(ctx).{{.OperationId}}({{$opid}}Context{ctx}{{genParamNames .PathParams}}{{if .RequiresParamObject}}, params{{end}})

@@ -4,10 +4,8 @@
 package parameters
 
 import (
-	"bytes"
-	"compress/gzip"
 	"context"
-	"encoding/base64"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -2778,16 +2776,6 @@ func (w *ServerInterfaceWrapper) GetCookie(ctx echo.Context) error {
 
 	}
 
-	// Validate params
-	err = ctx.Validate(params)
-	if err != nil {
-		return &echo.HTTPError{
-			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
-			Internal: err,
-		}
-	}
-
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler(ctx).GetCookie(GetCookieContext{ctx}, params)
 	return err
@@ -2905,16 +2893,6 @@ func (w *ServerInterfaceWrapper) GetHeader(ctx echo.Context) error {
 		}
 
 		params.XComplexObject = &XComplexObject
-	}
-
-	// Validate params
-	err = ctx.Validate(params)
-	if err != nil {
-		return &echo.HTTPError{
-			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
-			Internal: err,
-		}
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
@@ -3076,16 +3054,6 @@ func (w *ServerInterfaceWrapper) GetDeepObject(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter deepObj: %s", err))
 	}
 
-	// Validate params
-	err = ctx.Validate(params)
-	if err != nil {
-		return &echo.HTTPError{
-			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
-			Internal: err,
-		}
-	}
-
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler(ctx).GetDeepObject(GetDeepObjectContext{ctx}, params)
 	return err
@@ -3150,16 +3118,6 @@ func (w *ServerInterfaceWrapper) GetQueryForm(ctx echo.Context) error {
 		}
 		params.Co = &value
 
-	}
-
-	// Validate params
-	err = ctx.Validate(params)
-	if err != nil {
-		return &echo.HTTPError{
-			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
-			Internal: err,
-		}
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
@@ -3297,48 +3255,48 @@ func (wrapper ServerInterfaceWrapper) RegisterHandlers(router EchoRouter, pathPr
 
 }
 
-// Base64 encoded, gzipped, json marshaled Swagger object
-var swaggerSpec = []string{
+//go:embed parameters.yaml
+var spec []byte
 
-	"H4sIAAAAAAAC/9xZS2/jNhD+K8a0p0JreXdvugXbV4Duo3UOBRY5MNI45lYSuSQdJDD03wuSelIPS7aV",
-	"OHuzpeF8832cGQypPYQs4SzFVEkI9iBQcpZKNH/WNOEx/pM/0k9ClipMlf6p8FH5PCY01f9kuMWEmOdP",
-	"HCEAqQRN7yHLMg8ilKGgXFGWQgBXC2n8LgqsBbv7hqECbWr9GPQPTFs9frYvgz1wwTgKRW1w11ENjaYK",
-	"71FA5sG1vIoSG1T+8o6xGEmqX1bOfha4gQB+8iv+fg7uf67iEfh9RwVGEHwtFnsausK5bbhtxrihQqpP",
-	"JMEOYTwQLO564aAaK6/m6tZoStMN04tjGmK+OakBgo/XN9q7okq7hxuUarFG8YACPHhAIe02vF2ulitt",
-	"yDimhFMI4P1ytXwLHnCitiZ+P99vy8/fcyJIkuk392joarJE76veDfgD1Yf6AuNKkAQVCgnB10b+EM5j",
-	"GprF/jfJnCwa2p5mYuRqQGDCBq+QwSBDXUsldpjdes0cf7da9eGVdr5TCJnB9EPG/qM4rIaxaMnQLAgu",
-	"aEIVfdCG+MhjFiEEGxJLzImFhZuCGng1qTZMJETZInj/DrxWTWTeKEQtTw8gnoyYo0QLIgR5GgtLGrBU",
-	"YSJH4ZdPLFpHPK0whvSeL4xSFlYUzChdWCOgca3MhW4jDklwHOJc5d5kElqDSsNOBiEDp/jTXRybQt4i",
-	"iVAMFfKf1uLUQt4WbvKY/n3zpbZk1pIegH7zW56Fz1Lk7UCutHV3EM9W8j1RvXDht6OyVdAt1hx9oC+C",
-	"V9cO2kRyRwWhvuYQkzuMc71NTvj7pekCvwwOQn+5y9rNo2vHx8ww58lJD6R6MhOiYQjnnIzqmhWz41TR",
-	"+kbIc6g2JmFn1+cT68qqw/o01w0IVK/jHyivSv7NzJog3MHUOkW5l86thChBH53UotFw4X1sLTqm8Gg0",
-	"e05ZdvMJVubUJMWO71UHJJuWTLOJ02pVNBohzhka1WvOqHafmqbaCV3q0rOKEylvtoLt7rdjLpW+VOaD",
-	"V0oTriRf5MLo+w7F06+IvLov7KNcszpw6IwQ+fApwsBWPCPr+ugMcQbwKlGiKua+YdqE8jsTyRD3v0uj",
-	"A9RHnTcd9me7U6p466Uw8bzpRPVsQY07d7qazX/f5CCeA7CkeuhqxGU7z/XqANsjAF/yKO1E375YO6lJ",
-	"2o9DzXljxNFx3Vp2uQduS3E+1RqfaybIdjlH7tkUcifZw8PHumPdBR+651du/MfAddfCizh2z6ZSeak+",
-	"Xp/6JwBHmaOUGJE8c8mgXZsvzTb8nYghgK1SPPD9/DOzQqmWelJMCF8SCtlt9n8AAAD//xeCHE2EIAAA",
+// returns a raw spec
+func RawSpec() []byte {
+	return spec
+}
+
+// Constructs a synthetic filesystem for resolving external references when loading openapi specifications.
+func PathToRawSpec(pathPrefix string) map[string]func() []byte {
+	// todo: fix spec validator so that external references are correct;
+	// now they can point to api.yaml files whereas the real file name is different
+	var res = map[string]func() []byte{
+		path.Join(pathPrefix, "parameters.yaml"): RawSpec,
+		path.Join(pathPrefix, "api.yaml"):        RawSpec,
+	}
+
+	return res
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code
-// in this file.
-func GetSwagger() (*openapi3.Swagger, error) {
-	zipped, err := base64.StdEncoding.DecodeString(strings.Join(swaggerSpec, ""))
-	if err != nil {
-		return nil, fmt.Errorf("error base64 decoding spec: %s", err)
-	}
-	zr, err := gzip.NewReader(bytes.NewReader(zipped))
-	if err != nil {
-		return nil, fmt.Errorf("error decompressing spec: %s", err)
-	}
-	var buf bytes.Buffer
-	_, err = buf.ReadFrom(zr)
-	if err != nil {
-		return nil, fmt.Errorf("error decompressing spec: %s", err)
-	}
+// in this file. The external references of Swagger specification are resolved.
+// The logic of resolving external references is tightly connected to "import-mapping" feature.
+// Externally referenced files must be embedded in the corresponding golang packages.
+// Urls can be supported but this task was out of the scope.
+func GetSwagger() (swagger *openapi3.Swagger, err error) {
+	var resolvePath = PathToRawSpec("")
 
-	swagger, err := openapi3.NewSwaggerLoader().LoadSwaggerFromData(buf.Bytes())
-	if err != nil {
-		return nil, fmt.Errorf("error loading Swagger: %s", err)
+	loader := openapi3.NewSwaggerLoader()
+	loader.IsExternalRefsAllowed = true
+	loader.ReadFromURIFunc = func(loader *openapi3.SwaggerLoader, url *url.URL) ([]byte, error) {
+		var pathToFile = url.String()
+		if spec, ok := resolvePath[pathToFile]; !ok {
+			err1 := fmt.Errorf("path not found: %s", pathToFile)
+			return nil, err1
+		} else {
+			return spec(), nil
+		}
 	}
-	return swagger, nil
+	swagger, err = loader.LoadSwaggerFromData(spec)
+	if err != nil {
+		return
+	}
+	return
 }

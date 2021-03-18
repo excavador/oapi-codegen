@@ -5,9 +5,8 @@ package components
 
 import (
 	"bytes"
-	"compress/gzip"
 	"context"
-	"encoding/base64"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -25,10 +24,9 @@ import (
 
 // AdditionalPropertiesObject1 defines model for AdditionalPropertiesObject1.
 type AdditionalPropertiesObject1 struct {
-	Id                   int            `json:"id" validate:"required"`
-	Name                 string         `json:"name" validate:"required"`
-	Optional             *string        `json:"optional,omitempty"`
-	AdditionalProperties map[string]int `json:"-" validate:"dive,pass"`
+	Id       int     `json:"id" validate:"required"`
+	Name     string  `json:"name" validate:"required"`
+	Optional *string `json:"optional,omitempty"`
 }
 
 // AdditionalPropertiesObject2 defines model for AdditionalPropertiesObject2.
@@ -57,9 +55,7 @@ type AdditionalPropertiesObject4_Inner struct {
 }
 
 // AdditionalPropertiesObject5 defines model for AdditionalPropertiesObject5.
-type AdditionalPropertiesObject5 struct {
-	AdditionalProperties map[string]SchemaObject `json:"-" validate:"dive,pass"`
-}
+type AdditionalPropertiesObject5 map[string]interface{}
 
 // ObjectWithJsonField defines model for ObjectWithJsonField.
 type ObjectWithJsonField struct {
@@ -98,25 +94,15 @@ type ParamsWithAddPropsParams struct {
 	// This parameter has an anonymous inner property which needs to be
 	// turned into a proper type for additionalProperties to work
 	P2 struct {
-		Inner ParamsWithAddPropsParams_P2_Inner `json:"inner" validate:"required"`
+		Inner map[string]interface{} `json:"inner" validate:"required"`
 	} `json:"p2" validate:"required"`
-}
-
-// ParamsWithAddPropsParams_P2_Inner defines parameters for ParamsWithAddProps.
-type ParamsWithAddPropsParams_P2_Inner struct {
-	AdditionalProperties map[string]string `json:"-" validate:"dive,pass"`
 }
 
 // BodyWithAddPropsJSONBody defines parameters for BodyWithAddProps.
 type BodyWithAddPropsJSONBody struct {
-	Inner                BodyWithAddPropsJSONBody_Inner `json:"inner" validate:"required"`
-	Name                 string                         `json:"name" validate:"required"`
-	AdditionalProperties map[string]interface{}         `json:"-" validate:"dive,pass"`
-}
-
-// BodyWithAddPropsJSONBody_Inner defines parameters for BodyWithAddProps.
-type BodyWithAddPropsJSONBody_Inner struct {
-	AdditionalProperties map[string]int `json:"-" validate:"dive,pass"`
+	Inner                map[string]interface{} `json:"inner" validate:"required"`
+	Name                 string                 `json:"name" validate:"required"`
+	AdditionalProperties map[string]interface{} `json:"-" validate:"dive,pass"`
 }
 
 // EnsureEverythingIsReferencedRequestBody defines body for EnsureEverythingIsReferenced for application/json ContentType.
@@ -166,59 +152,6 @@ func (a *ParamsWithAddPropsParams_P1) UnmarshalJSON(b []byte) error {
 
 // Override default JSON handling for ParamsWithAddPropsParams_P1 to handle AdditionalProperties
 func (a ParamsWithAddPropsParams_P1) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling '%s'", fieldName))
-		}
-	}
-	return json.Marshal(object)
-}
-
-// Getter for additional properties for ParamsWithAddPropsParams_P2_Inner. Returns the specified
-// element and whether it was found
-func (a ParamsWithAddPropsParams_P2_Inner) Get(fieldName string) (value string, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for ParamsWithAddPropsParams_P2_Inner
-func (a *ParamsWithAddPropsParams_P2_Inner) Set(fieldName string, value string) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]string)
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for ParamsWithAddPropsParams_P2_Inner to handle AdditionalProperties
-func (a *ParamsWithAddPropsParams_P2_Inner) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]string)
-		for fieldName, fieldBuf := range object {
-			var fieldVal string
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return errors.Wrap(err, fmt.Sprintf("error unmarshaling field %s", fieldName))
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for ParamsWithAddPropsParams_P2_Inner to handle AdditionalProperties
-func (a ParamsWithAddPropsParams_P2_Inner) MarshalJSON() ([]byte, error) {
 	var err error
 	object := make(map[string]json.RawMessage)
 
@@ -299,153 +232,6 @@ func (a BodyWithAddPropsJSONBody) MarshalJSON() ([]byte, error) {
 	object["name"], err = json.Marshal(a.Name)
 	if err != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'name'"))
-	}
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling '%s'", fieldName))
-		}
-	}
-	return json.Marshal(object)
-}
-
-// Getter for additional properties for BodyWithAddPropsJSONBody_Inner. Returns the specified
-// element and whether it was found
-func (a BodyWithAddPropsJSONBody_Inner) Get(fieldName string) (value int, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for BodyWithAddPropsJSONBody_Inner
-func (a *BodyWithAddPropsJSONBody_Inner) Set(fieldName string, value int) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]int)
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for BodyWithAddPropsJSONBody_Inner to handle AdditionalProperties
-func (a *BodyWithAddPropsJSONBody_Inner) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]int)
-		for fieldName, fieldBuf := range object {
-			var fieldVal int
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return errors.Wrap(err, fmt.Sprintf("error unmarshaling field %s", fieldName))
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for BodyWithAddPropsJSONBody_Inner to handle AdditionalProperties
-func (a BodyWithAddPropsJSONBody_Inner) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling '%s'", fieldName))
-		}
-	}
-	return json.Marshal(object)
-}
-
-// Getter for additional properties for AdditionalPropertiesObject1. Returns the specified
-// element and whether it was found
-func (a AdditionalPropertiesObject1) Get(fieldName string) (value int, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for AdditionalPropertiesObject1
-func (a *AdditionalPropertiesObject1) Set(fieldName string, value int) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]int)
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for AdditionalPropertiesObject1 to handle AdditionalProperties
-func (a *AdditionalPropertiesObject1) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if raw, found := object["id"]; found {
-		err = json.Unmarshal(raw, &a.Id)
-		if err != nil {
-			return errors.Wrap(err, "error reading 'id'")
-		}
-		delete(object, "id")
-	}
-
-	if raw, found := object["name"]; found {
-		err = json.Unmarshal(raw, &a.Name)
-		if err != nil {
-			return errors.Wrap(err, "error reading 'name'")
-		}
-		delete(object, "name")
-	}
-
-	if raw, found := object["optional"]; found {
-		err = json.Unmarshal(raw, &a.Optional)
-		if err != nil {
-			return errors.Wrap(err, "error reading 'optional'")
-		}
-		delete(object, "optional")
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]int)
-		for fieldName, fieldBuf := range object {
-			var fieldVal int
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return errors.Wrap(err, fmt.Sprintf("error unmarshaling field %s", fieldName))
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for AdditionalPropertiesObject1 to handle AdditionalProperties
-func (a AdditionalPropertiesObject1) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
-
-	object["id"], err = json.Marshal(a.Id)
-	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'id'"))
-	}
-
-	object["name"], err = json.Marshal(a.Name)
-	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'name'"))
-	}
-
-	if a.Optional != nil {
-		object["optional"], err = json.Marshal(a.Optional)
-		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'optional'"))
-		}
 	}
 
 	for fieldName, field := range a.AdditionalProperties {
@@ -658,59 +444,6 @@ func (a AdditionalPropertiesObject4_Inner) MarshalJSON() ([]byte, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'name'"))
 	}
-
-	for fieldName, field := range a.AdditionalProperties {
-		object[fieldName], err = json.Marshal(field)
-		if err != nil {
-			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling '%s'", fieldName))
-		}
-	}
-	return json.Marshal(object)
-}
-
-// Getter for additional properties for AdditionalPropertiesObject5. Returns the specified
-// element and whether it was found
-func (a AdditionalPropertiesObject5) Get(fieldName string) (value SchemaObject, found bool) {
-	if a.AdditionalProperties != nil {
-		value, found = a.AdditionalProperties[fieldName]
-	}
-	return
-}
-
-// Setter for additional properties for AdditionalPropertiesObject5
-func (a *AdditionalPropertiesObject5) Set(fieldName string, value SchemaObject) {
-	if a.AdditionalProperties == nil {
-		a.AdditionalProperties = make(map[string]SchemaObject)
-	}
-	a.AdditionalProperties[fieldName] = value
-}
-
-// Override default JSON handling for AdditionalPropertiesObject5 to handle AdditionalProperties
-func (a *AdditionalPropertiesObject5) UnmarshalJSON(b []byte) error {
-	object := make(map[string]json.RawMessage)
-	err := json.Unmarshal(b, &object)
-	if err != nil {
-		return err
-	}
-
-	if len(object) != 0 {
-		a.AdditionalProperties = make(map[string]SchemaObject)
-		for fieldName, fieldBuf := range object {
-			var fieldVal SchemaObject
-			err := json.Unmarshal(fieldBuf, &fieldVal)
-			if err != nil {
-				return errors.Wrap(err, fmt.Sprintf("error unmarshaling field %s", fieldName))
-			}
-			a.AdditionalProperties[fieldName] = fieldVal
-		}
-	}
-	return nil
-}
-
-// Override default JSON handling for AdditionalPropertiesObject5 to handle AdditionalProperties
-func (a AdditionalPropertiesObject5) MarshalJSON() ([]byte, error) {
-	var err error
-	object := make(map[string]json.RawMessage)
 
 	for fieldName, field := range a.AdditionalProperties {
 		object[fieldName], err = json.Marshal(field)
@@ -1325,10 +1058,6 @@ func (c *EnsureEverythingIsReferencedContext) JSON200(resp struct {
 	// Does not allow additional properties
 	Two *AdditionalPropertiesObject2 `json:"two,omitempty"`
 }) error {
-	err := c.Validate(resp)
-	if err != nil {
-		return fmt.Errorf("response validation failed: %s", err)
-	}
 	return c.JSON(200, resp)
 }
 
@@ -1349,14 +1078,6 @@ func (c *EnsureEverythingIsReferencedContext) BindJSON() (*RequestBody, error) {
 	var result RequestBody
 	if err = c.Bind(&result); err != nil {
 		return nil, err
-	}
-
-	if err = c.Validate(result); err != nil {
-		return nil, &echo.HTTPError{
-			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
-			Internal: err,
-		}
 	}
 
 	return &result, nil
@@ -1387,14 +1108,6 @@ func (c *BodyWithAddPropsContext) BindJSON() (*BodyWithAddPropsJSONBody, error) 
 	var result BodyWithAddPropsJSONBody
 	if err = c.Bind(&result); err != nil {
 		return nil, err
-	}
-
-	if err = c.Validate(result); err != nil {
-		return nil, &echo.HTTPError{
-			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
-			Internal: err,
-		}
 	}
 
 	return &result, nil
@@ -1432,16 +1145,6 @@ func (w *ServerInterfaceWrapper) ParamsWithAddProps(ctx echo.Context) error {
 	err = runtime.BindQueryParameter("form", true, true, "p2", ctx.QueryParams(), &params.P2)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter p2: %s", err))
-	}
-
-	// Validate params
-	err = ctx.Validate(params)
-	if err != nil {
-		return &echo.HTTPError{
-			Code:     http.StatusBadRequest,
-			Message:  fmt.Sprintf("request validation failed: %s", err.Error()),
-			Internal: err,
-		}
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
@@ -1492,48 +1195,48 @@ func (wrapper ServerInterfaceWrapper) RegisterHandlers(router EchoRouter, pathPr
 
 }
 
-// Base64 encoded, gzipped, json marshaled Swagger object
-var swaggerSpec = []string{
+//go:embed components.yaml
+var spec []byte
 
-	"H4sIAAAAAAAC/9RXTW/jNhD9KwTboxLHzvaim4tu0RRoG+wG6GFjBLQ4ipjKQy05sldY6L8XQ8nflNdx",
-	"9rK5RJY5X49v3oy/yswuKouA5GX6VTr4XIOnX602EF582Lxo+GNmkQCJH1VVlSZTZCyOXrxFfuezAhaK",
-	"nypnK3DUe/ndQKn54WcHuUzlT6Nt2FFn5Ecfw/9/5i+QkWzbJCRjHGiZfuo9zPg1wRcaVaUyByGpqUCm",
-	"0pMz+Cxb/mMfvrLo18V0H/oYP1o9idTgM2cqzlGmciq8WVQliHWRwm6D9Vmwo6nWhk1Ueb+poktrHAqP",
-	"fL0T3yDBMzh5FP4P5cXWVmwREjYXbCwMkkwOoDM67hvVAiJVJ9JWXYAYJPuYBhcJR5gl66NrRJITKEyG",
-	"UchV6eGw8N8seIGWhCpLu4pj8Na6v1Npt8OlkauPKptyQV4obCJVNUc1vSL316X97nVpByaixWZhay9y",
-	"bi2xKkxWiGKIo8f3gwjuW2G/a/nnmXd5JZeg+Mup7j5fuc7v+5WhQnRORG6d0CYLh1wH+FHqXYR/DRV/",
-	"eosbUT0L5UQuVVlDULDcuoUimcqg28nA0ckZR+Nt10eKob8H1VHuuXGe/h4qwNnyDAKEU8mOq1kYBQZz",
-	"y8alyQA9bJGSf909sHcyxO7lA3gSH8EtA42W4Hx3jePrm+ubTmABVWVkKm+vb67H3BmKipD/CNDXDq5g",
-	"Ca6hwuDzlfFXDnJwgBmE23qGUPg+Rx4K4wWgrqxBEvDFePLCW0GFIrFlnMgUijmIzIEi0MKgoML4R/QV",
-	"ZEKhDjI7B1G5GkE/8o0xvmFK32mZyvchwfeb/O78h212yc4+0wyRfm/lGe3uO4frw+Tm5g07Q26W8K3G",
-	"O9XLbSJzW7vLXbxjFy+7jXbKT6w3mSz4hiLGgZeFgzf4uA0+VvZyD5PQYged3K9XuapLGmZKT4bRwSLZ",
-	"WY8q5dTCP7EKPimtn/j+/WCLTAW3WaeZwRIInA+kV2JuddOPsF4L4pIb6Yj7kAVf3FTr+5ACd/Q6gEw/",
-	"RZt1c2J4ZoZgvKXKzzW4Zj2UUlmN5a5mdbNy2wenJuqRoHpqgmx1q61sk3OyxZ3xHwbmZmfpQUQA7QVZ",
-	"MYdHpNphEBuyQvUnu4WVh1YsW7ZcWfffMAKTkwi8atWITIpDssZWhFnbzvYEC+uybBNZWR9hXxjiote+",
-	"XbqxuimD/K02DjKKApIwTx/xJPBM7JhthLMstweMdRf+8Dx/fTv3GnaW9Qt3uPX2vr6n9pAr7fHFtW37",
-	"fwAAAP//Xv36ip0PAAA=",
+// returns a raw spec
+func RawSpec() []byte {
+	return spec
+}
+
+// Constructs a synthetic filesystem for resolving external references when loading openapi specifications.
+func PathToRawSpec(pathPrefix string) map[string]func() []byte {
+	// todo: fix spec validator so that external references are correct;
+	// now they can point to api.yaml files whereas the real file name is different
+	var res = map[string]func() []byte{
+		path.Join(pathPrefix, "components.yaml"): RawSpec,
+		path.Join(pathPrefix, "api.yaml"):        RawSpec,
+	}
+
+	return res
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code
-// in this file.
-func GetSwagger() (*openapi3.Swagger, error) {
-	zipped, err := base64.StdEncoding.DecodeString(strings.Join(swaggerSpec, ""))
-	if err != nil {
-		return nil, fmt.Errorf("error base64 decoding spec: %s", err)
-	}
-	zr, err := gzip.NewReader(bytes.NewReader(zipped))
-	if err != nil {
-		return nil, fmt.Errorf("error decompressing spec: %s", err)
-	}
-	var buf bytes.Buffer
-	_, err = buf.ReadFrom(zr)
-	if err != nil {
-		return nil, fmt.Errorf("error decompressing spec: %s", err)
-	}
+// in this file. The external references of Swagger specification are resolved.
+// The logic of resolving external references is tightly connected to "import-mapping" feature.
+// Externally referenced files must be embedded in the corresponding golang packages.
+// Urls can be supported but this task was out of the scope.
+func GetSwagger() (swagger *openapi3.Swagger, err error) {
+	var resolvePath = PathToRawSpec("")
 
-	swagger, err := openapi3.NewSwaggerLoader().LoadSwaggerFromData(buf.Bytes())
-	if err != nil {
-		return nil, fmt.Errorf("error loading Swagger: %s", err)
+	loader := openapi3.NewSwaggerLoader()
+	loader.IsExternalRefsAllowed = true
+	loader.ReadFromURIFunc = func(loader *openapi3.SwaggerLoader, url *url.URL) ([]byte, error) {
+		var pathToFile = url.String()
+		if spec, ok := resolvePath[pathToFile]; !ok {
+			err1 := fmt.Errorf("path not found: %s", pathToFile)
+			return nil, err1
+		} else {
+			return spec(), nil
+		}
 	}
-	return swagger, nil
+	swagger, err = loader.LoadSwaggerFromData(spec)
+	if err != nil {
+		return
+	}
+	return
 }
