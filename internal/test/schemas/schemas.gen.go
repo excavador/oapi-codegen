@@ -361,6 +361,7 @@ func NewIssue127Request(server string) (*http.Request, error) {
 // NewIssue185Request calls the generic Issue185 builder with application/json body
 func NewIssue185Request(server string, body Issue185JSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
+	runtime.Translate(&body)
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
@@ -510,6 +511,7 @@ func NewIssue41Request(server string, n1param N5StartsWithNumber) (*http.Request
 // NewIssue9Request calls the generic Issue9 builder with application/json body
 func NewIssue9Request(server string, params *Issue9Params, body Issue9JSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
+	runtime.Translate(&body)
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err

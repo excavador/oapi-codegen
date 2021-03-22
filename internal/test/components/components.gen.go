@@ -617,6 +617,7 @@ func (c *Client) BodyWithAddProps(ctx context.Context, body BodyWithAddPropsJSON
 // NewEnsureEverythingIsReferencedRequest calls the generic EnsureEverythingIsReferenced builder with application/json body
 func NewEnsureEverythingIsReferencedRequest(server string, body EnsureEverythingIsReferencedJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
+	runtime.Translate(&body)
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
@@ -722,6 +723,7 @@ func NewParamsWithAddPropsRequest(server string, params *ParamsWithAddPropsParam
 // NewBodyWithAddPropsRequest calls the generic BodyWithAddProps builder with application/json body
 func NewBodyWithAddPropsRequest(server string, body BodyWithAddPropsJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
+	runtime.Translate(&body)
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err

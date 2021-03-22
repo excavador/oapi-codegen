@@ -16,6 +16,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
@@ -274,6 +275,7 @@ func (c *Client) GetJsonWithTrailingSlash(ctx context.Context) (*http.Response, 
 // NewPostBothRequest calls the generic PostBoth builder with application/json body
 func NewPostBothRequest(server string, body PostBothJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
+	runtime.Translate(&body)
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
@@ -344,6 +346,7 @@ func NewGetBothRequest(server string) (*http.Request, error) {
 // NewPostJsonRequest calls the generic PostJson builder with application/json body
 func NewPostJsonRequest(server string, body PostJsonJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
+	runtime.Translate(&body)
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
