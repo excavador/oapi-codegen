@@ -300,6 +300,7 @@ func NewFindPetsRequest(server string, params *FindPetsParams) (*http.Request, e
 // NewAddPetRequest calls the generic AddPet builder with application/json body
 func NewAddPetRequest(server string, body AddPetJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
+	runtime.Translate(&body)
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err

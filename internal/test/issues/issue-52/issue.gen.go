@@ -4,8 +4,11 @@
 package issue_52
 
 import (
+	"bytes"
+	"compress/gzip"
 	"context"
 	_ "embed"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -302,21 +305,52 @@ func (wrapper ServerInterfaceWrapper) RegisterHandlers(router EchoRouter, pathPr
 
 }
 
-//go:embed spec.yaml
-var spec []byte
+// Base64 encoded, gzipped, json marshaled Swagger object
+var swaggerSpec = []string{
 
-// returns a raw spec
-func RawSpec() []byte {
-	return spec
+	"H4sIAAAAAAAC/5RSQU/zMAz9K5W/71i1ZdxyQwIhhBCcOHExibdmpEmUuBPT1P+OnG5jEwjEqcmr3/Pz",
+	"i3egwxCDJ88Z1A6y7mnAcrxKCbfP6EaSm2UaCvw/0RIU/Gs/ie2e1c7VUw28jQQKUCTkfh30OJBnEYgp",
+	"REpsqcgtLTlTTmiMZRs8uqezir80DK9r0gzTV6SG4yjnBvBszJ+anQQy1ZA5Wb86EvftZvQ7AwJZvwxS",
+	"bChnnWyUcUHBA75RlcdEFffIVSI9pmw3VIlErjBR1aM3jkw1e3fbFw81sGUnLegdh+gIathQyrNm13TN",
+	"hfgMkTxGCwoum65ZQA0RuS+jtwei2sGKyuOIOoqtOwMKbub/t8RQQ6Icg89zaouuk48OnvfPijE6qwu3",
+	"XWfxcNim33I9LkfJyNBpNI/3gk7T9BEAAP//t/QkwqkCAAA=",
+}
+
+// GetSwagger returns the content of the embedded swagger specification file
+// or error if failed to decode
+func decodeSpec() ([]byte, error) {
+	zipped, err := base64.StdEncoding.DecodeString(strings.Join(swaggerSpec, ""))
+	if err != nil {
+		return nil, fmt.Errorf("error base64 decoding spec: %s", err)
+	}
+	zr, err := gzip.NewReader(bytes.NewReader(zipped))
+	if err != nil {
+		return nil, fmt.Errorf("error decompressing spec: %s", err)
+	}
+	var buf bytes.Buffer
+	_, err = buf.ReadFrom(zr)
+	if err != nil {
+		return nil, fmt.Errorf("error decompressing spec: %s", err)
+	}
+
+	return buf.Bytes(), nil
+}
+
+var rawSpec = decodeSpecCached()
+
+// a naive cached of a decoded swagger spec
+func decodeSpecCached() func() ([]byte, error) {
+	data, err := decodeSpec()
+	return func() ([]byte, error) {
+		return data, err
+	}
 }
 
 // Constructs a synthetic filesystem for resolving external references when loading openapi specifications.
-func PathToRawSpec(pathPrefix string) map[string]func() []byte {
-	// todo: fix spec validator so that external references are correct;
-	// now they can point to api.yaml files whereas the real file name is different
-	var res = map[string]func() []byte{
-		path.Join(pathPrefix, "spec.yaml"): RawSpec,
-		path.Join(pathPrefix, "api.yaml"):  RawSpec,
+func PathToRawSpec(pathToFile string) map[string]func() ([]byte, error) {
+	var res = make(map[string]func() ([]byte, error))
+	if len(pathToFile) > 0 {
+		res[pathToFile] = rawSpec
 	}
 
 	return res
@@ -334,14 +368,19 @@ func GetSwagger() (swagger *openapi3.Swagger, err error) {
 	loader.IsExternalRefsAllowed = true
 	loader.ReadFromURIFunc = func(loader *openapi3.SwaggerLoader, url *url.URL) ([]byte, error) {
 		var pathToFile = url.String()
-		if spec, ok := resolvePath[pathToFile]; !ok {
+		getSpec, ok := resolvePath[pathToFile]
+		if !ok {
 			err1 := fmt.Errorf("path not found: %s", pathToFile)
 			return nil, err1
-		} else {
-			return spec(), nil
 		}
+		return getSpec()
 	}
-	swagger, err = loader.LoadSwaggerFromData(spec)
+	var specData []byte
+	specData, err = rawSpec()
+	if err != nil {
+		return
+	}
+	swagger, err = loader.LoadSwaggerFromData(specData)
 	if err != nil {
 		return
 	}

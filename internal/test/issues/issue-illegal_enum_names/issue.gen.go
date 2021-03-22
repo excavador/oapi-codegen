@@ -4,8 +4,11 @@
 package illegal_enum_names
 
 import (
+	"bytes"
+	"compress/gzip"
 	"context"
 	_ "embed"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -303,21 +306,51 @@ func (wrapper ServerInterfaceWrapper) RegisterHandlers(router EchoRouter, pathPr
 
 }
 
-//go:embed spec.yaml
-var spec []byte
+// Base64 encoded, gzipped, json marshaled Swagger object
+var swaggerSpec = []string{
 
-// returns a raw spec
-func RawSpec() []byte {
-	return spec
+	"H4sIAAAAAAAC/0yQzU4DMQyEX6UaOIbsUm45cijiGRCqoq23DeraUWKQqirvjpyFQi4z+ZnYn6+YZMnC",
+	"xFoRrqjTiZbY7XMsJsSfC8IbdiJw/dCZ39zcw+oe/z/YrBuTDRz2O5E93h30kgkBVUviI1prDolnsTqa",
+	"9Gx33ns4fFGpSRgBox/9iOYgmTjmhIAnP/otHHLUU291mKX/cSQ1kUwlahJ+PSDghXTtplDNwpV6ZDuO",
+	"JpOwEvdUzPmcpp4bPqrV/h2HuaS09OB9oRkBd8Pf4IafqQ0G326UsZR4WSEPVKeSsq5Ihtj6+g4AAP//",
+	"Jkt64H8BAAA=",
+}
+
+// GetSwagger returns the content of the embedded swagger specification file
+// or error if failed to decode
+func decodeSpec() ([]byte, error) {
+	zipped, err := base64.StdEncoding.DecodeString(strings.Join(swaggerSpec, ""))
+	if err != nil {
+		return nil, fmt.Errorf("error base64 decoding spec: %s", err)
+	}
+	zr, err := gzip.NewReader(bytes.NewReader(zipped))
+	if err != nil {
+		return nil, fmt.Errorf("error decompressing spec: %s", err)
+	}
+	var buf bytes.Buffer
+	_, err = buf.ReadFrom(zr)
+	if err != nil {
+		return nil, fmt.Errorf("error decompressing spec: %s", err)
+	}
+
+	return buf.Bytes(), nil
+}
+
+var rawSpec = decodeSpecCached()
+
+// a naive cached of a decoded swagger spec
+func decodeSpecCached() func() ([]byte, error) {
+	data, err := decodeSpec()
+	return func() ([]byte, error) {
+		return data, err
+	}
 }
 
 // Constructs a synthetic filesystem for resolving external references when loading openapi specifications.
-func PathToRawSpec(pathPrefix string) map[string]func() []byte {
-	// todo: fix spec validator so that external references are correct;
-	// now they can point to api.yaml files whereas the real file name is different
-	var res = map[string]func() []byte{
-		path.Join(pathPrefix, "spec.yaml"): RawSpec,
-		path.Join(pathPrefix, "api.yaml"):  RawSpec,
+func PathToRawSpec(pathToFile string) map[string]func() ([]byte, error) {
+	var res = make(map[string]func() ([]byte, error))
+	if len(pathToFile) > 0 {
+		res[pathToFile] = rawSpec
 	}
 
 	return res
@@ -335,14 +368,19 @@ func GetSwagger() (swagger *openapi3.Swagger, err error) {
 	loader.IsExternalRefsAllowed = true
 	loader.ReadFromURIFunc = func(loader *openapi3.SwaggerLoader, url *url.URL) ([]byte, error) {
 		var pathToFile = url.String()
-		if spec, ok := resolvePath[pathToFile]; !ok {
+		getSpec, ok := resolvePath[pathToFile]
+		if !ok {
 			err1 := fmt.Errorf("path not found: %s", pathToFile)
 			return nil, err1
-		} else {
-			return spec(), nil
 		}
+		return getSpec()
 	}
-	swagger, err = loader.LoadSwaggerFromData(spec)
+	var specData []byte
+	specData, err = rawSpec()
+	if err != nil {
+		return
+	}
+	swagger, err = loader.LoadSwaggerFromData(specData)
 	if err != nil {
 		return
 	}
