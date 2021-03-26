@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"os"
-	"path"
 	"strings"
 	"text/template"
 
@@ -426,5 +425,4 @@ var TemplateFunctions = template.FuncMap{
 	"lower":                      strings.ToLower,
 	"title":                      strings.Title,
 	"stripNewLines":              stripNewLines,
-	"osBase":                     path.Base,
 }

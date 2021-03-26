@@ -748,9 +748,9 @@ func PathToRawSpec(pathToFile string) map[string]func() ([]byte, error) {
     pathPrefix := path.Dir(pathToFile)
     {{ end }}
     {{ range $key, $value := .ImportMapping }}
-    for rawPath, rawFunc := range {{ $value.Name }}.PathToRawSpec(path.Join(pathPrefix, "{{ $value.Path }}", "{{ osBase $key }}")) {
+    for rawPath, rawFunc := range {{ $value.Name }}.PathToRawSpec(path.Join(pathPrefix, "{{ $key }}")) {
         if _, ok := res[rawPath]; ok {
-            panic(fmt.Sprintf("path already exists: %s", rawPath))
+            // it is not possible to compare functions in golang, so always overwrite the old value
         }
         res[rawPath] = rawFunc
     }
@@ -770,6 +770,7 @@ func GetSwagger() (swagger *openapi3.Swagger, err error) {
     loader.IsExternalRefsAllowed = true
     loader.ReadFromURIFunc = func(loader *openapi3.SwaggerLoader, url *url.URL) ([]byte, error) {
         var pathToFile = url.String()
+        pathToFile = path.Clean(pathToFile)
         getSpec, ok := resolvePath[pathToFile]
         if !ok {
             err1 := fmt.Errorf("path not found: %s", pathToFile)
