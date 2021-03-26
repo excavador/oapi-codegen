@@ -150,6 +150,7 @@ func genResponseHelpers(op *OperationDefinition) string {
 						buffer.WriteString(fmt.Sprintf(`
 func (c *%sContext) YAML%s(resp %s) error {
 	var out []byte
+	var err error
 	out, err = yaml.Marshal(resp)
 	if err != nil {
 		return err
