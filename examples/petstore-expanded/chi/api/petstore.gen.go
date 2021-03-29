@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"path"
 	"strings"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
@@ -274,6 +275,7 @@ func GetSwagger() (swagger *openapi3.Swagger, err error) {
 	loader.IsExternalRefsAllowed = true
 	loader.ReadFromURIFunc = func(loader *openapi3.SwaggerLoader, url *url.URL) ([]byte, error) {
 		var pathToFile = url.String()
+		pathToFile = path.Clean(pathToFile)
 		getSpec, ok := resolvePath[pathToFile]
 		if !ok {
 			err1 := fmt.Errorf("path not found: %s", pathToFile)
