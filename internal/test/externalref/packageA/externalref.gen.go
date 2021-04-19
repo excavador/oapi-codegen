@@ -4,8 +4,6 @@
 package packageA
 
 import (
-	_ "embed"
-
 	externalRef0 "github.com/deepmap/oapi-codegen/internal/test/externalref/packageB"
 )
 

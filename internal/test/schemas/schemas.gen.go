@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"compress/gzip"
 	"context"
-	_ "embed"
 	"encoding/base64"
 	"encoding/json"
 	"encoding/xml"

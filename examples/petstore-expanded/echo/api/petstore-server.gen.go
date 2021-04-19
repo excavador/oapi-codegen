@@ -6,7 +6,6 @@ package api
 import (
 	"bytes"
 	"compress/gzip"
-	_ "embed"
 	"encoding/base64"
 	"fmt"
 	"net/http"

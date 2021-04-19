@@ -4,7 +4,6 @@
 package server
 
 import (
-	_ "embed"
 	"fmt"
 	"net/http"
 	"time"
