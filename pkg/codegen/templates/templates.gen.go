@@ -713,16 +713,16 @@ var swaggerSpec = []string{
 func decodeSpec() ([]byte, error) {
     zipped, err := base64.StdEncoding.DecodeString(strings.Join(swaggerSpec, ""))
     if err != nil {
-        return nil, fmt.Errorf("error base64 decoding spec: %s", err)
+        return nil, errors.Wrap(err, "error base64 decoding spec")
     }
     zr, err := gzip.NewReader(bytes.NewReader(zipped))
     if err != nil {
-        return nil, fmt.Errorf("error decompressing spec: %s", err)
+        return nil, errors.Wrap(err, "error decompressing spec")
     }
     var buf bytes.Buffer
     _, err = buf.ReadFrom(zr)
     if err != nil {
-        return nil, fmt.Errorf("error decompressing spec: %s", err)
+        return nil, errors.Wrap(err, "error decompressing spec")
     }
 
     return buf.Bytes(), nil
@@ -773,7 +773,7 @@ func GetSwagger() (swagger *openapi3.Swagger, err error) {
         pathToFile = path.Clean(pathToFile)
         getSpec, ok := resolvePath[pathToFile]
         if !ok {
-            err1 := fmt.Errorf("path not found: %s", pathToFile)
+            err1 := errors.Errorf("path not found: %s", pathToFile)
             return nil, err1
         }
         return getSpec()
